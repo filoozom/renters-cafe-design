@@ -5,21 +5,9 @@ import classnames from "classnames";
 
 import type { ComponentChildren } from "preact";
 
-const DrawerIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    class="inline-block w-6 h-6 stroke-current"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M4 6h16M4 12h16M4 18h16"
-    />
-  </svg>
-);
+import { DrawerIcon } from "./icons/drawer";
+import { TwitterIcon } from "./icons/twitter";
+import { DiscordIcon } from "./icons/discord";
 
 const WalletButton = () => {
   const { ethereum } = window;
@@ -109,6 +97,17 @@ export const Layout = ({ children }: LayoutProps) => (
         </div>
       </div>
       {children}
+      <footer class="flex items-center p-4 bg-neutral text-neutral-content justify-between">
+        <p>No rights reserved :-)</p>
+        <div class="flex gap-4">
+          <a>
+            <TwitterIcon />
+          </a>
+          <a>
+            <DiscordIcon />
+          </a>
+        </div>
+      </footer>
     </div>
     <div class="drawer-side">
       <label for="navbar-drawer" class="drawer-overlay" />
