@@ -8,6 +8,7 @@
 
 .table tr {
   border-radius: 20px;
+  @apply shadow;
 }
 
 .table tr td:last-child,
@@ -27,19 +28,21 @@
 
 .table tr:not(.selected) td,
 .table tr:not(.selected) th {
-  @apply bg-base-200;
+  @apply bg-base-300;
+  @apply text-base-content;
 }
 
 .table :global(.avatar).icon {
-  @apply border-base-200;
+  @apply border-base-300;
 }
 
 .table tr.selected td,
 .table tr.selected th {
-  @apply bg-neutral;
-  @apply border-neutral;
+  @apply bg-base-200;
+  @apply border-base-200;
+  @apply text-base-content;
 }
 
 .table tr.selected :global(.avatar).icon {
-  @apply border-neutral;
+  @apply border-base-200;
 }

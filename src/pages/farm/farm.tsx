@@ -283,7 +283,7 @@ const CogIcon = () => (
 
 const PoolSettings = () => {
   const [action, setAction] = useState<"deposit" | "withdraw">("deposit");
-  const buttonClasses = ["btn", "btn-outline", "btn-sm", "text-base-200"];
+  const buttonClasses = ["btn", "btn-outline", "btn-sm"];
 
   return (
     <tr class={classes.selected}>
@@ -310,10 +310,10 @@ const PoolSettings = () => {
             </button>
           </div>
           <div class="btn-group mb-4">
-            <button class="btn btn-outline btn-sm text-base-200">25%</button>
-            <button class="btn btn-outline btn-sm text-base-200">50%</button>
-            <button class="btn btn-outline btn-sm text-base-200">75%</button>
-            <button class="btn btn-outline btn-sm text-base-200">100%</button>
+            <button class="btn btn-outline btn-sm">25%</button>
+            <button class="btn btn-outline btn-sm">50%</button>
+            <button class="btn btn-outline btn-sm">75%</button>
+            <button class="btn btn-outline btn-sm">100%</button>
           </div>
         </div>
         <input
@@ -351,7 +351,7 @@ const PoolTr = ({
             </div>
           </div>
         </div>
-        <div class="ml-2">
+        <div class="ml-2 text-left">
           <strong>{pool.tokens.map(({ name }) => name).join("-")}</strong>
           <br />
           {pool.type} Pool
@@ -381,13 +381,13 @@ export const FarmPage = (_: FarmPageProps) => {
   return (
     <>
       <Hero />
-      <div class="flex items-center justify-center bg-gray-900">
-        <div class="col-span-12">
+      <div class="hero">
+        <div class="max-w-5xl mx-auto text-center hero-content">
           <div class="overflow-auto lg:overflow-visible ">
             <table
-              class={`text-gray-400 border-separate space-y-6 text-sm ${classes.table}`}
+              class={`border-separate space-y-6 text-center ${classes.table}`}
             >
-              <thead class="bg-gray-800 text-gray-500">
+              <thead>
                 <tr>
                   <th class="p-3">Pool</th>
                   <th class="p-3">TVL</th>
