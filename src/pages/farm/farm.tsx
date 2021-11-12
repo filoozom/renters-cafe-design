@@ -1,5 +1,7 @@
 import { useState } from "preact/hooks";
 import classnames from "classnames";
+import type { RouteComponentProps } from "@reach/router";
+
 import classes from "./farm.module.css";
 
 type Pool = {
@@ -137,7 +139,7 @@ const pools: Pool[] = [
 ];
 
 const Hero = () => (
-  <div class="hero p-32 bg-gradient-to-br from-primary to-accent">
+  <div class="hero p-32 bg-gradient-to-br from-primary to-secondary">
     <div class="text-center hero-content text-accent-content">
       <div class="max-w-lg">
         <h1 class="mb-8 text-5xl font-bold">
@@ -368,7 +370,9 @@ const PoolTr = ({
   </>
 );
 
-export const FarmPage = () => {
+type FarmPageProps = RouteComponentProps;
+
+export const FarmPage = (_: FarmPageProps) => {
   const [active, setActive] = useState<number | null>();
   const changeActive = (id: number) => {
     setActive(active === id ? null : id);

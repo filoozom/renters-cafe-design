@@ -1,4 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
+import type { RouteComponentProps } from "@reach/router";
 import {
   addSeconds,
   differenceInMilliseconds,
@@ -299,7 +300,9 @@ const PropertyCards = () => (
   </div>
 );
 
-export const PropertiesPage = () => (
+type PropertiesPageProps = RouteComponentProps;
+
+export const PropertiesPage = (_: PropertiesPageProps) => (
   <>
     <Hero />
     <PropertyCards />

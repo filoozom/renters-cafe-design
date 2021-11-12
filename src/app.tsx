@@ -1,3 +1,6 @@
+import { Router } from "@reach/router";
+
+// Components
 import { Layout } from "./components/layout";
 
 // Pages
@@ -8,8 +11,10 @@ export function App() {
   return (
     <>
       <Layout>
-        {/*<PropertiesPage />*/}
-        <FarmPage />
+        <Router primary={false}>
+          <FarmPage path="/" />
+          <PropertiesPage path="/properties" />
+        </Router>
       </Layout>
     </>
   );

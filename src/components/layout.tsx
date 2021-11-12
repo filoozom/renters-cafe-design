@@ -1,4 +1,5 @@
 import { ComponentChildren } from "preact";
+import { Link } from "@reach/router";
 
 const DrawerIcon = () => (
   <svg
@@ -35,8 +36,12 @@ export const Layout = ({ children }: LayoutProps) => (
         </div>
         <div class="hidden px-2 mx-2 navbar-center lg:flex">
           <div class="flex items-stretch">
-            <a class="btn btn-ghost rounded-btn">Yield</a>
-            <a class="btn btn-ghost rounded-btn">Properties</a>
+            <Link className="btn btn-ghost rounded-btn" to="/">
+              Yield
+            </Link>
+            <Link className="btn btn-ghost rounded-btn" to="/properties">
+              Properties
+            </Link>
           </div>
         </div>
         <div class="navbar-end">
@@ -49,10 +54,10 @@ export const Layout = ({ children }: LayoutProps) => (
       <label for="navbar-drawer" class="drawer-overlay" />
       <ul class="p-4 overflow-y-auto menu w-80 bg-base-100">
         <li>
-          <a>Yield</a>
+          <Link to="/">Yield</Link>
         </li>
         <li>
-          <a>Properties</a>
+          <Link to="/properties">Properties</Link>
         </li>
       </ul>
     </div>
