@@ -1,5 +1,9 @@
-import { ComponentChildren } from "preact";
+import { useEffect, useState } from "preact/hooks";
+import { ethers } from "ethers";
 import { Link } from "@reach/router";
+import classnames from "classnames";
+
+import type { ComponentChildren } from "preact";
 
 const DrawerIcon = () => (
   <svg
@@ -16,6 +20,57 @@ const DrawerIcon = () => (
     />
   </svg>
 );
+
+const WalletButton = () => {
+  const { ethereum } = window;
+  const provider = new ethers.providers.Web3Provider(ethereum);
+
+  const [address, setAddress] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const connectWallet = async () => {
+    if (loading) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await provider.send("eth_requestAccounts", []);
+    } catch (err) {}
+    setLoading(false);
+  };
+
+  // Fetch current logged-in address
+  useEffect(() => {
+    const signer = provider.getSigner();
+    signer
+      .getAddress()
+      .then(setAddress)
+      .catch(() => {});
+
+    ethereum.on("accountsChanged", (accounts: Array<string>) => {
+      setAddress(accounts[0]);
+    });
+  }, []);
+
+  return (
+    <button
+      class={classnames(
+        "btn",
+        "btn-primary",
+        "normal-case",
+        loading && ["btn-disabled", "loading"]
+      )}
+      onClick={connectWallet}
+    >
+      {loading
+        ? "Connecting..."
+        : address
+        ? `${address.slice(0, 6)}...${address.slice(-4)}`
+        : "Connect Wallet"}
+    </button>
+  );
+};
 
 type LayoutProps = {
   children: ComponentChildren;
@@ -45,7 +100,7 @@ export const Layout = ({ children }: LayoutProps) => (
           </div>
         </div>
         <div class="navbar-end">
-          <button class="btn btn-primary">Connect wallet</button>
+          <WalletButton />
         </div>
       </div>
       {children}

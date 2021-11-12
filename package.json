@@ -13,6 +13,7 @@
     "classnames": "^2.3.1",
     "daisyui": "^1.16.2",
     "date-fns": "^2.25.0",
+    "ethers": "^5.5.1",
     "postcss": "^8.3.11",
     "preact": "^10.5.13",
     "tailwindcss": "^2.2.19"
