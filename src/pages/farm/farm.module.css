@@ -1,0 +1,45 @@
+.table {
+  border-spacing: 0 15px;
+}
+
+.table i {
+  font-size: 1rem !important;
+}
+
+.table tr {
+  border-radius: 20px;
+}
+
+.table tr td:last-child,
+.table tr th:last-child {
+  border-radius: 0 0.625rem 0.625rem 0;
+}
+
+.table tr td:first-child,
+.table tr th:first-child {
+  border-radius: 0.625rem 0 0 0.625rem;
+}
+
+.table tr td:first-child:last-child,
+.table tr th:first-child:last-child {
+  border-radius: 0.625rem;
+}
+
+.table tr:not(.selected) td,
+.table tr:not(.selected) th {
+  @apply bg-base-200;
+}
+
+.table :global(.avatar).icon {
+  @apply border-base-200;
+}
+
+.table tr.selected td,
+.table tr.selected th {
+  @apply bg-neutral;
+  @apply border-neutral;
+}
+
+.table tr.selected :global(.avatar).icon {
+  @apply border-neutral;
+}
