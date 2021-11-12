@@ -29,7 +29,7 @@ const WalletButton = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const connectWallet = async () => {
-    if (loading) {
+    if (loading || address) {
       return;
     }
 
