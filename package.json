@@ -8,8 +8,12 @@
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.4.1",
+    "autoprefixer": "^10.4.0",
     "daisyui": "^1.16.2",
-    "preact": "^10.5.13"
+    "date-fns": "^2.25.0",
+    "postcss": "^8.3.11",
+    "preact": "^10.5.13",
+    "tailwindcss": "^2.2.19"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.0.0",
