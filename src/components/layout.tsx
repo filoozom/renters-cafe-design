@@ -24,6 +24,7 @@ const DrawerIcon = () => (
 const WalletButton = () => {
   const { ethereum } = window;
   const provider = new ethers.providers.Web3Provider(ethereum);
+  const signer = provider.getSigner();
 
   const [address, setAddress] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
@@ -42,15 +43,19 @@ const WalletButton = () => {
 
   // Fetch current logged-in address
   useEffect(() => {
-    const signer = provider.getSigner();
     signer
       .getAddress()
       .then(setAddress)
       .catch(() => {});
 
-    ethereum.on("accountsChanged", (accounts: Array<string>) => {
+    const handler = (accounts: string[]) => {
       setAddress(accounts[0]);
-    });
+    };
+
+    ethereum.on("accountsChanged", handler);
+    return () => {
+      provider?.removeListener("accountsChanged", handler);
+    };
   }, []);
 
   return (
