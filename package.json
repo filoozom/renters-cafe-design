@@ -1,0 +1,19 @@
+{
+  "name": "design",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/typography": "^0.4.1",
+    "daisyui": "^1.16.2",
+    "preact": "^10.5.13"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.0.0",
+    "typescript": "^4.3.2",
+    "vite": "^2.6.4"
+  }
+}
