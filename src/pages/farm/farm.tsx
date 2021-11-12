@@ -138,6 +138,9 @@ const pools: Pool[] = [
   },
 ];
 
+const getPoolName = (pool: Pool) =>
+  pool.tokens.map(({ name }) => name).join("-");
+
 const Hero = () => (
   <div class="hero p-32 bg-gradient-to-br from-primary to-secondary">
     <div class="text-center hero-content text-accent-content">
@@ -281,7 +284,7 @@ const CogIcon = () => (
   </svg>
 );
 
-const PoolSettings = () => {
+const PoolSettings = ({ pool }: { pool: Pool }) => {
   const [action, setAction] = useState<"deposit" | "withdraw">("deposit");
   const buttonClasses = ["btn", "btn-outline", "btn-sm"];
 
@@ -316,11 +319,14 @@ const PoolSettings = () => {
             <button class="btn btn-outline btn-sm">100%</button>
           </div>
         </div>
-        <input
-          type="text"
-          placeholder="Amount"
-          class="input input-bordered w-full mb-4"
-        />
+        <label class="input-group mb-4">
+          <input
+            type="text"
+            placeholder="Amount"
+            class="input input-bordered w-full"
+          />
+          <span class="whitespace-nowrap">{getPoolName(pool)}</span>
+        </label>
         <button class="btn btn-primary w-full">{action}</button>
       </td>
     </tr>
@@ -352,7 +358,7 @@ const PoolTr = ({
           </div>
         </div>
         <div class="ml-2 text-left">
-          <strong>{pool.tokens.map(({ name }) => name).join("-")}</strong>
+          <strong>{getPoolName(pool)}</strong>
           <br />
           {pool.type} Pool
         </div>
@@ -366,7 +372,7 @@ const PoolTr = ({
         </div>
       </td>
     </tr>
-    {active && <PoolSettings />}
+    {active && <PoolSettings pool={pool} />}
   </>
 );
 
