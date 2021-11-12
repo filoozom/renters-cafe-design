@@ -269,7 +269,7 @@ const PropertyCards = () => (
     <div class="max-w-5xl mx-auto text-center hero-content">
       <div>
         <PropertyCardMenu />
-        <div class="grid grid-cols-3 gap-5">
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {properties.map((property) => (
             <PropertyCard property={property} />
           ))}
@@ -280,8 +280,8 @@ const PropertyCards = () => (
 );
 
 const PropertyCardMenu = () => (
-  <div class="flex justify-center mb-4">
-    <select class="select select-bordered max-w-xs m-2">
+  <div class="flex justify-center mb-4 flex-col sm:flex-row xs:w-auto w-full">
+    <select class="select select-bordered m-2">
       <option disabled selected>
         Availability
       </option>
@@ -289,7 +289,7 @@ const PropertyCardMenu = () => (
       <option>Available</option>
       <option>Locked</option>
     </select>
-    <select class="select select-bordered max-w-xs m-2">
+    <select class="select select-bordered m-2">
       <option disabled selected>
         Bonus type
       </option>
