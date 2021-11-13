@@ -1,11 +1,13 @@
+import type { LP } from "./lp";
+
 export type Pool = {
-  type: "Trader Joe";
-  id: number;
+  id: bigint;
   token: string;
-  allocation: number;
-  balance: number;
-  tokens: {
-    address: string;
-    name: string;
-  }[];
+  allocation: bigint;
+  balance: bigint;
+
+  accRentPerShare?: bigint;
+  lastRewardBlock?: bigint;
+
+  lp: LP;
 };

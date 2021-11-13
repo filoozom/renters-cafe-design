@@ -1,6 +1,11 @@
 export default {
-  rpc: "https://api.avax.network/ext/bc/C/rpc",
+  rpc: "http://localhost:8545",
   cafe: {
-    address: "0x0165878a594ca255338adfa4d48449f69242eb8f",
+    address: "0x9bcc604d4381c5b0ad12ff3bf32bede063416bc7",
+  },
+  lps: {
+    nameToType: {
+      "Joe LP Token": "Trader Joe",
+    },
   },
 };

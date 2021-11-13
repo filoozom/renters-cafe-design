@@ -1,138 +1,15 @@
-import { useState, useRef, useEffect } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 import classnames from "classnames";
 import type { RouteComponentProps } from "@reach/router";
 
 import classes from "./farm.module.css";
 
 import type { Pool } from "../../types/pool";
-import type { UnboxPromise } from "../../types/unbox-promise";
 import { CogIcon } from "../../components/icons/cog";
 import { Cafe } from "../../lib/cafe";
 
-const pools: Pool[] = [
-  {
-    type: "Trader Joe",
-    id: 0,
-    token: "0x0",
-    allocation: 100,
-    balance: 0,
-    tokens: [
-      {
-        address: "0x0",
-        name: "RENT",
-      },
-      {
-        address: "0x0",
-        name: "JOE",
-      },
-    ],
-  },
-  {
-    type: "Trader Joe",
-    id: 1,
-    token: "0x0",
-    allocation: 100,
-    balance: 0,
-    tokens: [
-      {
-        address: "0x0",
-        name: "RENT",
-      },
-      {
-        address: "0x0",
-        name: "WAVAX",
-      },
-    ],
-  },
-  {
-    type: "Trader Joe",
-    id: 2,
-    token: "0x0",
-    allocation: 100,
-    balance: 0,
-    tokens: [
-      {
-        address: "0x0",
-        name: "RENT",
-      },
-      {
-        address: "0x0",
-        name: "USDT.e",
-      },
-    ],
-  },
-  {
-    type: "Trader Joe",
-    id: 3,
-    token: "0x0",
-    allocation: 100,
-    balance: 0,
-    tokens: [
-      {
-        address: "0x0",
-        name: "RENT",
-      },
-      {
-        address: "0x0",
-        name: "WBTC.e",
-      },
-    ],
-  },
-  {
-    type: "Trader Joe",
-    id: 4,
-    token: "0x0",
-    allocation: 10,
-    balance: 0,
-    tokens: [
-      {
-        address: "0x0",
-        name: "MIM",
-      },
-      {
-        address: "0x0",
-        name: "TIME",
-      },
-    ],
-  },
-  {
-    type: "Trader Joe",
-    id: 5,
-    token: "0x0",
-    allocation: 10,
-    balance: 0,
-    tokens: [
-      {
-        address: "0x0",
-        name: "WAVAX",
-      },
-      {
-        address: "0x0",
-        name: "TIME",
-      },
-    ],
-  },
-  {
-    type: "Trader Joe",
-    id: 6,
-    token: "0x0",
-    allocation: 10,
-    balance: 0,
-    tokens: [
-      {
-        address: "0x0",
-        name: "USDC.e",
-      },
-      {
-        address: "0x0",
-        name: "USDT.e",
-      },
-    ],
-  },
-];
-
 const getPoolName = (pool: Pool) =>
-  pool.tokens.map(({ name }) => name).join("-");
+  pool.lp.tokens.map(({ symbol }) => symbol).join("-");
 
 const Hero = () => (
   <div class="hero p-32 bg-gradient-to-br from-primary to-secondary">
@@ -147,108 +24,6 @@ const Hero = () => (
           interchangeable
         </p>
         <button class="btn btn-primary">Get Started</button>
-      </div>
-    </div>
-  </div>
-);
-
-const Property = ({ pool }: { pool: Pool }) => {
-  return (
-    <div class="card bordered shadow">
-      <div class="flex items-center justify-center space-x-2 m-4">
-        <div>
-          <div class="-space-x-6 avatar-group">
-            <div class={classes.avatar}>
-              <div class="w-12 h-12">
-                <img src="https://res.cloudinary.com/sushi-cdn/image/fetch/w_96/https://raw.githubusercontent.com/sushiswap/logos/main/network/ethereum/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599.jpg" />
-              </div>
-            </div>
-            <div class={classes.avatar}>
-              <div class="w-12 h-12">
-                <img src="https://res.cloudinary.com/sushi-cdn/image/fetch/w_96/https://raw.githubusercontent.com/sushiswap/icons/master/token/eth.jpg" />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="text-lg font-extrabold">
-            {pool.tokens.map(({ name }) => name).join("-")}
-          </div>
-          <div class="text-sm text-base-content text-opacity-60">
-            {pool.type} Farm
-          </div>
-        </div>
-      </div>
-      <div class="card-body text-left p-4">
-        <div class="flex justify-between">
-          <span>TVL</span>
-          <span>$123,456,789</span>
-        </div>
-        <div class="flex justify-between">
-          <span>Rewards</span>
-          <span>5 RENT/day</span>
-        </div>
-        <div class="flex justify-between">
-          <span>APR</span>
-          <span>98.87%</span>
-        </div>
-        <div class="justify-end card-actions">
-          <button class="btn btn-secondary">Steal</button>
-        </div>
-        <div class="alert">
-          <div class="flex-1">
-            <label class="mx-3">Pending</label>
-          </div>
-          <div class="flex-1">
-            <span class="mx-3">200 RENT</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const Menu = () => (
-  <div class="flex justify-center mb-4 flex-col sm:flex-row xs:w-auto w-full">
-    <select class="select select-bordered m-2">
-      <option disabled selected>
-        Availability
-      </option>
-      <option>All</option>
-      <option>Available</option>
-      <option>Locked</option>
-    </select>
-    <select class="select select-bordered m-2">
-      <option disabled selected>
-        Bonus type
-      </option>
-      <option>All</option>
-      <option>Ratio increase</option>
-      <option>LP increase</option>
-    </select>
-    <div class="relative m-2">
-      <input
-        type="text"
-        placeholder="Search"
-        class="w-full pr-16 input input-primary input-bordered"
-      />
-      <button class="absolute top-0 right-0 rounded-l-none btn btn-primary">
-        go
-      </button>
-    </div>
-  </div>
-);
-
-const Pools = () => (
-  <div class="hero">
-    <div class="max-w-5xl mx-auto text-center hero-content">
-      <div>
-        <Menu />
-        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-          {pools.map((pool) => (
-            <Property pool={pool} />
-          ))}
-        </div>
       </div>
     </div>
   </div>
@@ -307,60 +82,78 @@ const PoolTr = ({
   pool,
   active,
   onSettings,
+  rentPerSecond,
 }: {
   pool: Pool;
   active: boolean;
   onSettings: () => void;
-}) => (
-  <>
-    <tr class={`${active ? classes.selected : ""}`}>
-      <td class="p-3 flex items-center">
-        <div class="-space-x-6 avatar-group">
-          <div class={`avatar ${classes.icon}`}>
-            <div class="w-12 h-12">
-              <img src="https://res.cloudinary.com/sushi-cdn/image/fetch/w_96/https://raw.githubusercontent.com/sushiswap/logos/main/network/ethereum/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599.jpg" />
+  rentPerSecond: bigint;
+}) => {
+  const rentPerDay = Number(rentPerSecond) / 60 / 60 / 24;
+  return (
+    <>
+      <tr class={`${active ? classes.selected : ""}`}>
+        <td class="p-3 flex items-center">
+          <div class="-space-x-6 avatar-group">
+            <div class={`avatar ${classes.icon}`}>
+              <div class="w-12 h-12">
+                <img src="https://res.cloudinary.com/sushi-cdn/image/fetch/w_96/https://raw.githubusercontent.com/sushiswap/logos/main/network/ethereum/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599.jpg" />
+              </div>
+            </div>
+            <div class={`avatar ${classes.icon}`}>
+              <div class="w-12 h-12">
+                <img src="https://res.cloudinary.com/sushi-cdn/image/fetch/w_96/https://raw.githubusercontent.com/sushiswap/icons/master/token/eth.jpg" />
+              </div>
             </div>
           </div>
-          <div class={`avatar ${classes.icon}`}>
-            <div class="w-12 h-12">
-              <img src="https://res.cloudinary.com/sushi-cdn/image/fetch/w_96/https://raw.githubusercontent.com/sushiswap/icons/master/token/eth.jpg" />
-            </div>
+          <div class="ml-2 text-left">
+            <strong>{getPoolName(pool)}</strong>
+            <br />
+            {pool.lp.type} Pool
           </div>
-        </div>
-        <div class="ml-2 text-left">
-          <strong>{getPoolName(pool)}</strong>
-          <br />
-          {pool.type} Pool
-        </div>
-      </td>
-      <td class="p-3">$123,456,789</td>
-      <td class="p-3">123 RENT / day</td>
-      <td class="p-3">123.45%</td>
-      <td class="p-3">
-        <div class="btn btn-square btn-ghost" onClick={onSettings}>
-          <CogIcon />
-        </div>
-      </td>
-    </tr>
-    {active && <PoolSettings pool={pool} />}
-  </>
-);
+        </td>
+        <td class="p-3">$123,456,789</td>
+        <td class="p-3">{Math.round(rentPerDay * 100) / 100} RENT / day</td>
+        <td class="p-3">123.45%</td>
+        <td class="p-3">
+          <div class="btn btn-square btn-ghost" onClick={onSettings}>
+            <CogIcon />
+          </div>
+        </td>
+      </tr>
+      {active && <PoolSettings pool={pool} />}
+    </>
+  );
+};
 
 type FarmPageProps = RouteComponentProps;
+type Cafe = {
+  rentPerSecond: bigint;
+  totalAllocation: bigint;
+};
 
 export const FarmPage = (_: FarmPageProps) => {
-  const cafe = useRef<UnboxPromise<ReturnType<typeof Cafe>>>();
-  const [active, setActive] = useState<number | null>();
-  const changeActive = (id: number) => {
+  const [cafe, setCafe] = useState<Cafe>();
+  const [pools, setPools] = useState<Pool[]>([]);
+  const [active, setActive] = useState<bigint | null>();
+  const changeActive = (id: bigint) => {
     setActive(active === id ? null : id);
   };
 
   useEffect(() => {
     (async () => {
-      cafe.current = await Cafe();
-      console.log(await cafe.current.getPools());
+      const cafe = await Cafe();
+      setPools(await cafe.getPools());
+      setCafe({
+        rentPerSecond: await cafe.getRentPerSeconds(),
+        totalAllocation: await cafe.getTotalAllocation(),
+      });
     })();
   }, []);
+
+  if (!cafe || !pools) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <>
@@ -383,6 +176,10 @@ export const FarmPage = (_: FarmPageProps) => {
               <tbody>
                 {pools.map((pool) => (
                   <PoolTr
+                    rentPerSecond={
+                      (pool.allocation / cafe.totalAllocation) *
+                      cafe.rentPerSecond
+                    }
                     pool={pool}
                     active={active === pool.id}
                     onSettings={() => changeActive(pool.id)}
