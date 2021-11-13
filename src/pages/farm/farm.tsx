@@ -1,22 +1,13 @@
-import { useState } from "preact/hooks";
+import { useState, useRef, useEffect } from "preact/hooks";
 import classnames from "classnames";
 import type { RouteComponentProps } from "@reach/router";
 
 import classes from "./farm.module.css";
 
+import type { Pool } from "../../types/pool";
+import type { UnboxPromise } from "../../types/unbox-promise";
 import { CogIcon } from "../../components/icons/cog";
-
-type Pool = {
-  type: "Trader Joe";
-  id: number;
-  token: string;
-  allocation: number;
-  balance: number;
-  tokens: {
-    address: string;
-    name: string;
-  }[];
-};
+import { Cafe } from "../../lib/cafe";
 
 const pools: Pool[] = [
   {
@@ -358,10 +349,18 @@ const PoolTr = ({
 type FarmPageProps = RouteComponentProps;
 
 export const FarmPage = (_: FarmPageProps) => {
+  const cafe = useRef<UnboxPromise<ReturnType<typeof Cafe>>>();
   const [active, setActive] = useState<number | null>();
   const changeActive = (id: number) => {
     setActive(active === id ? null : id);
   };
+
+  useEffect(() => {
+    (async () => {
+      cafe.current = await Cafe();
+      console.log(await cafe.current.getPools());
+    })();
+  }, []);
 
   return (
     <>
