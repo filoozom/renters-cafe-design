@@ -8,6 +8,7 @@ import type { ComponentChildren } from "preact";
 import { DrawerIcon } from "./icons/drawer";
 import { TwitterIcon } from "./icons/twitter";
 import { DiscordIcon } from "./icons/discord";
+import { Logo } from "./logo";
 
 const WalletButton = () => {
   const { ethereum } = window;
@@ -74,15 +75,16 @@ export const Layout = ({ children }: LayoutProps) => (
     <input id="navbar-drawer" type="checkbox" class="drawer-toggle" />
     <div class="flex flex-col drawer-content">
       <div class="w-full navbar bg-base-200 shadow-lg">
-        <div class="flex-none lg:hidden">
+        <div class="flex-none sm:hidden">
           <label for="navbar-drawer" class="btn btn-square btn-ghost">
             <DrawerIcon />
           </label>
         </div>
-        <div class="px-2 mx-2 navbar-start">
-          <span>Renter.Cafe</span>
+        <div class="navbar-start sm:ml-2">
+          <Logo />
+          <span class="ml-2 sm:block hidden">Renter.Cafe</span>
         </div>
-        <div class="hidden px-2 mx-2 navbar-center lg:flex">
+        <div class="hidden px-2 mx-2 navbar-center sm:flex">
           <div class="flex items-stretch">
             <Link className="btn btn-ghost rounded-btn" to="/">
               Yield
