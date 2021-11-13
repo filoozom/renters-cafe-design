@@ -3,7 +3,7 @@ import { BigNumber } from "ethers";
 export const toBigNumber = (value: BigNumber) =>
   BigInt(BigNumber.from(value).toString());
 
-export const cleanOutput = (object) => {
+export const cleanOutput = (object: any) => {
   const keys = Object.keys(object);
   const isArray =
     (Array.isArray(object) && !keys.length) ||
