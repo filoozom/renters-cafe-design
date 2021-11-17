@@ -145,7 +145,7 @@ export const FarmPage = (_: FarmPageProps) => {
       const cafe = await Cafe();
       setPools(await cafe.getPools());
       setCafe({
-        rentPerSecond: await cafe.getRentPerSeconds(),
+        rentPerSecond: await cafe.getRentPerSecond(),
         totalAllocation: await cafe.getTotalAllocation(),
       });
     })();

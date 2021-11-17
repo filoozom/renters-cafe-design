@@ -1,7 +1,7 @@
 export default {
   rpc: "http://localhost:8545",
   cafe: {
-    address: "0x9bcc604d4381c5b0ad12ff3bf32bede063416bc7",
+    address: "0x610178da211fef7d417bc0e6fed39f05609ad788",
   },
   lps: {
     nameToType: {

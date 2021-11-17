@@ -5,6 +5,7 @@ import abi from "../data/abis/lp.json";
 import config from "../../config/default";
 import type { LP as LPType } from "../types/lp";
 import { ERC20 } from "./erc20";
+import { toBigInt } from "./ethereum";
 
 const provider = new providers.JsonRpcProvider(config.rpc);
 
@@ -29,9 +30,20 @@ export const LP = async (address: string) => {
     return config.lps.nameToType[name] || "Unknown";
   };
 
+  const getBalance = async (
+    address = config.cafe.address
+  ): Promise<LPType["balance"]> => {
+    const contract = getContract();
+    return toBigInt(await contract.balanceOf(address));
+  };
+
   const getAll = async (): Promise<LPType> => {
-    const [tokens, type] = await Promise.all([getTokens(), getType()]);
-    return { tokens, type };
+    const [tokens, type, balance] = await Promise.all([
+      getTokens(),
+      getType(),
+      getBalance(),
+    ]);
+    return { tokens, type, balance };
   };
 
   return {
@@ -39,5 +51,6 @@ export const LP = async (address: string) => {
     getTokens,
     getType,
     getAll,
+    getBalance,
   };
 };

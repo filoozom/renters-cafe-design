@@ -4,4 +4,5 @@ export type LP = {
     address: string;
     symbol: string;
   }[];
+  balance: bigint;
 };

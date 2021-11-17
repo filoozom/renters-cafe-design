@@ -5,6 +5,7 @@ export type Pool = {
   token: string;
   allocation: bigint;
   balance: bigint;
+  withdrawFee: bigint;
 
   accRentPerShare?: bigint;
   lastRewardBlock?: bigint;

@@ -2,7 +2,7 @@ import { providers, Contract } from "ethers";
 import type { Signer } from "ethers";
 
 import abi from "../data/abis/cafe.json";
-import { cleanOutput, toBigNumber } from "./ethereum";
+import { cleanOutput, toBigInt } from "./ethereum";
 import config from "../../config/default";
 import type { Pool } from "../types/pool";
 import { LP } from "./lp";
@@ -23,36 +23,37 @@ export const Cafe = async () => {
     const count = await contract.poolLength();
     return await Promise.all(
       Array.from({ length: count }, (_, i) => i).map(async (id) => {
-        const pool = cleanOutput(await contract.pools(id));
+        const pool = cleanOutput(await contract.pools(id)) as Pool;
         const lp = await LP(pool.token);
-        const [type, tokens] = await Promise.all([
+        const [type, tokens, balance] = await Promise.all([
           lp.getType(),
           lp.getTokens(),
+          lp.getBalance(),
         ]);
 
         return {
-          id,
           ...pool,
-          lp: { type, tokens },
+          id: BigInt(id),
+          lp: { type, tokens, balance },
         };
       })
     );
   };
 
-  const getRentPerSeconds = async (): Promise<bigint> => {
+  const getRentPerSecond = async (): Promise<bigint> => {
     const contract = getContract();
-    return toBigNumber(await contract.rentPerBlock());
+    return toBigInt(await contract.rentPerSecond());
   };
 
   const getTotalAllocation = async (): Promise<bigint> => {
     const contract = getContract();
-    return toBigNumber(await contract.rentPerBlock());
+    return toBigInt(await contract.totalAllocation());
   };
 
   return {
     getContract,
     getPools,
-    getRentPerSeconds,
+    getRentPerSecond,
     getTotalAllocation,
   };
 };

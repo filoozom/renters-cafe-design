@@ -1,21 +1,19 @@
 import { BigNumber } from "ethers";
 
-export const toBigNumber = (value: BigNumber) =>
+export const toBigInt = (value: BigNumber) =>
   BigInt(BigNumber.from(value).toString());
 
-export const cleanOutput = (object: any) => {
-  const keys = Object.keys(object);
-  const isArray =
-    (Array.isArray(object) && !keys.length) ||
-    !isNaN(parseInt(keys[keys.length - 1]));
-  const result = isArray ? [...object] : { ...object };
+export const cleanOutput = (object: Array<any>) => {
+  const keys = new Set(Object.keys([...object]));
+  const isBasicArray = keys.size === Object.keys(object).length;
+  const result: any = isBasicArray ? [...object] : { ...object };
 
   for (const [key, value] of Object.entries(result)) {
-    if (!isArray && !isNaN(Number(key))) {
+    if (!isBasicArray && keys.has(key)) {
       delete result[key];
     } else if (BigNumber.isBigNumber(value)) {
-      result[key] = BigInt(BigNumber.from(value).toString());
-    } else if (typeof value === "object") {
+      result[key] = toBigInt(value);
+    } else if (Array.isArray(value)) {
       result[key] = cleanOutput(value);
     }
   }
