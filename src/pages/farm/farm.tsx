@@ -1,12 +1,39 @@
 import { useState, useEffect } from "preact/hooks";
 import classnames from "classnames";
 import type { RouteComponentProps } from "@reach/router";
+import { useQuery } from "urql";
 
 import classes from "./farm.module.css";
 
 import type { Pool } from "../../types/pool";
 import { CogIcon } from "../../components/icons/cog";
 import { Cafe } from "../../lib/cafe";
+
+const FarmQuery = `
+  query {
+    cafe(id: "0x31a65c6d4eb07ad51e7afc890ac3b7be84df2ead") {
+      id
+      rentPerSecond
+      totalAllocation
+      withdrawFeePrecision
+      pools {
+        id
+        token
+        allocation
+        withdrawFee
+        lp {
+          id
+          name
+          symbol
+        }
+        users {
+          id
+          
+        }
+      }
+    }
+  }
+`;
 
 const getPoolName = (pool: Pool) =>
   pool.lp.tokens.map(({ symbol }) => symbol).join("-");
@@ -139,6 +166,11 @@ export const FarmPage = (_: FarmPageProps) => {
   const changeActive = (id: bigint) => {
     setActive(active === id ? null : id);
   };
+
+  const [result, reexecuteQuery] = useQuery({
+    query: FarmQuery,
+  });
+  console.log(result);
 
   useEffect(() => {
     (async () => {
