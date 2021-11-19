@@ -1,59 +1,19 @@
-import { providers, Contract } from "ethers";
-import type { Signer } from "ethers";
+import { Contract } from "ethers";
 
 import abi from "../data/abis/cafe.json";
-import { cleanOutput, toBigInt } from "./ethereum";
 import config from "../../config/default";
-import type { Pool } from "../types/pool";
-import { LP } from "./lp";
-
-const provider = new providers.JsonRpcProvider(config.rpc);
-const getContract = (signer: Signer | providers.Provider = provider) =>
-  new Contract(config.cafe.address, abi, signer);
+import { getSigner } from "./ethereum";
 
 export const Cafe = async () => {
-  /*
-  const { ethereum } = window;
-  const provider = new providers.Web3Provider(ethereum);
-  const signer = provider.getSigner();
-  */
+  const signer = getSigner();
+  const contract = new Contract(config.cafe.address, abi, signer);
 
-  const getPools = async (): Promise<Pool[]> => {
-    const contract = getContract();
-    const count = await contract.poolLength();
-    return await Promise.all(
-      Array.from({ length: count }, (_, i) => i).map(async (id) => {
-        const pool = cleanOutput(await contract.pools(id)) as Pool;
-        const lp = await LP(pool.token);
-        const [type, tokens, balance] = await Promise.all([
-          lp.getType(),
-          lp.getTokens(),
-          lp.getBalance(),
-        ]);
-
-        return {
-          ...pool,
-          id: BigInt(id),
-          lp: { type, tokens, balance },
-        };
-      })
-    );
-  };
-
-  const getRentPerSecond = async (): Promise<bigint> => {
-    const contract = getContract();
-    return toBigInt(await contract.rentPerSecond());
-  };
-
-  const getTotalAllocation = async (): Promise<bigint> => {
-    const contract = getContract();
-    return toBigInt(await contract.totalAllocation());
+  const deposit = async (poolId: bigint, amount: bigint): Promise<void> => {
+    await contract.deposit(poolId, amount);
   };
 
   return {
-    getContract,
-    getPools,
-    getRentPerSecond,
-    getTotalAllocation,
+    contract,
+    deposit,
   };
 };

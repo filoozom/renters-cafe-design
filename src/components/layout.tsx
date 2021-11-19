@@ -10,12 +10,14 @@ import { TwitterIcon } from "./icons/twitter";
 import { DiscordIcon } from "./icons/discord";
 import { Logo } from "./logo";
 
+import { useStore } from "../store";
+
 const WalletButton = () => {
   const { ethereum } = window;
   const provider = new ethers.providers.Web3Provider(ethereum);
   const signer = provider.getSigner();
 
-  const [address, setAddress] = useState<string>();
+  const [address, setAddress] = useStore.address();
   const [loading, setLoading] = useState<boolean>(false);
 
   const connectWallet = async () => {

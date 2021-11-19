@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber, providers } from "ethers";
 
 export const toBigInt = (value: BigNumber) =>
   BigInt(BigNumber.from(value).toString());
@@ -19,4 +19,10 @@ export const cleanOutput = (object: Array<any>) => {
   }
 
   return result;
+};
+
+export const getSigner = () => {
+  const { ethereum } = window;
+  const provider = new providers.Web3Provider(ethereum);
+  return provider.getSigner();
 };

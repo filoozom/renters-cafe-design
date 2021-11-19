@@ -1,13 +1,22 @@
+import { JSX } from "preact";
 import { useState, useEffect } from "preact/hooks";
 import classnames from "classnames";
 import type { RouteComponentProps } from "@reach/router";
 import { useQuery } from "urql";
+import { constants } from "ethers";
 
 import classes from "./farm.module.css";
 
 import type { Pool } from "../../types/pool";
 import { CogIcon } from "../../components/icons/cog";
 import { Cafe } from "../../lib/cafe";
+import { LP } from "../../lib/lp";
+
+import { useStore } from "../../store";
+import { ERC20 } from "../../lib/erc20";
+
+import config from "../../../config/default";
+import { toBigInt } from "../../lib/ethereum";
 
 const FarmQuery = `
   query {
@@ -35,8 +44,12 @@ const FarmQuery = `
   }
 `;
 
+/*
 const getPoolName = (pool: Pool) =>
   pool.lp.tokens.map(({ symbol }) => symbol).join("-");
+*/
+
+const getPoolName = (pool: any) => pool.token.substr(2, 4);
 
 const Hero = () => (
   <div class="hero p-32 bg-gradient-to-br from-primary to-secondary">
@@ -57,8 +70,60 @@ const Hero = () => (
 );
 
 const PoolSettings = ({ pool }: { pool: Pool }) => {
+  const [address] = useStore.address();
+  const [balance, setBalance] = useState<bigint>(0n);
+  const [input, setInput] = useState<string>();
   const [action, setAction] = useState<"deposit" | "withdraw">("deposit");
   const buttonClasses = ["btn", "btn-outline", "btn-sm"];
+  const percentages = [25, 50, 75, 100];
+
+  useEffect(() => {
+    if (!address) {
+      return;
+    }
+
+    (async () => {
+      const lp = await LP(pool.token);
+      setBalance(await lp.getBalance(address));
+    })();
+  }, [pool.token, address]);
+
+  const choosePercentage = (percentage: number) => {
+    if (action === "deposit") {
+      setInput(((balance * BigInt(percentage)) / 100n).toString());
+    }
+  };
+
+  const changeInput = ({
+    currentTarget,
+  }: JSX.TargetedEvent<HTMLInputElement, Event>) => {
+    setInput(currentTarget.value);
+  };
+
+  const doAction = async () => {
+    if (!input) {
+      return;
+    }
+
+    if (action === "deposit") {
+      const amount = BigInt(input);
+
+      // Check allowance
+      const token = await ERC20(pool.token);
+      if (!(await token.checkAllowance(amount))) {
+        await token.approve(
+          config.cafe.address,
+          toBigInt(constants.MaxUint256)
+        );
+      }
+
+      console.log(pool.id, amount);
+
+      // Initiate deposit
+      const cafe = await Cafe();
+      await cafe.deposit(pool.id, amount);
+    }
+  };
 
   return (
     <tr class={classes.selected}>
@@ -85,10 +150,14 @@ const PoolSettings = ({ pool }: { pool: Pool }) => {
             </button>
           </div>
           <div class="btn-group mb-4">
-            <button class="btn btn-outline btn-sm">25%</button>
-            <button class="btn btn-outline btn-sm">50%</button>
-            <button class="btn btn-outline btn-sm">75%</button>
-            <button class="btn btn-outline btn-sm">100%</button>
+            {percentages.map((percentage) => (
+              <button
+                class="btn btn-outline btn-sm"
+                onClick={() => choosePercentage(percentage)}
+              >
+                {percentage}%
+              </button>
+            ))}
           </div>
         </div>
         <label class="input-group mb-4">
@@ -96,10 +165,14 @@ const PoolSettings = ({ pool }: { pool: Pool }) => {
             type="text"
             placeholder="Amount"
             class="input input-bordered w-full"
+            value={input}
+            onChange={changeInput}
           />
           <span class="whitespace-nowrap">{getPoolName(pool)}</span>
         </label>
-        <button class="btn btn-primary w-full">{action}</button>
+        <button class="btn btn-primary w-full" onClick={doAction}>
+          {action}
+        </button>
       </td>
     </tr>
   );
@@ -116,7 +189,8 @@ const PoolTr = ({
   onSettings: () => void;
   rentPerSecond: bigint;
 }) => {
-  const rentPerDay = Number(rentPerSecond) / 60 / 60 / 24;
+  const rentPerDay = (Number(rentPerSecond) * 60 * 60 * 24) / 1e18;
+  console.log({ rentPerSecond, rentPerDay });
   return (
     <>
       <tr class={`${active ? classes.selected : ""}`}>
@@ -157,35 +231,26 @@ type FarmPageProps = RouteComponentProps;
 type Cafe = {
   rentPerSecond: bigint;
   totalAllocation: bigint;
+  withdrawFeePrecision: bigint;
+  pools: [Pool];
 };
 
 export const FarmPage = (_: FarmPageProps) => {
-  const [cafe, setCafe] = useState<Cafe>();
-  const [pools, setPools] = useState<Pool[]>([]);
   const [active, setActive] = useState<bigint | null>();
   const changeActive = (id: bigint) => {
     setActive(active === id ? null : id);
   };
 
-  const [result, reexecuteQuery] = useQuery({
+  const [result] = useQuery<{ cafe: Cafe }>({
     query: FarmQuery,
   });
-  console.log(result);
 
-  useEffect(() => {
-    (async () => {
-      const cafe = await Cafe();
-      setPools(await cafe.getPools());
-      setCafe({
-        rentPerSecond: await cafe.getRentPerSecond(),
-        totalAllocation: await cafe.getTotalAllocation(),
-      });
-    })();
-  }, []);
-
-  if (!cafe || !pools) {
+  if (!result.data) {
     return <p>Loading...</p>;
   }
+
+  const { cafe } = result.data;
+  const { pools } = cafe;
 
   return (
     <>
@@ -209,8 +274,8 @@ export const FarmPage = (_: FarmPageProps) => {
                 {pools.map((pool) => (
                   <PoolTr
                     rentPerSecond={
-                      (pool.allocation / cafe.totalAllocation) *
-                      cafe.rentPerSecond
+                      (pool.allocation * cafe.rentPerSecond) /
+                      cafe.totalAllocation
                     }
                     pool={pool}
                     active={active === pool.id}
