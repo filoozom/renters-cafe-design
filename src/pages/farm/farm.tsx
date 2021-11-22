@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from "preact/hooks";
 import classnames from "classnames";
 import type { RouteComponentProps } from "@reach/router";
 import { useQuery } from "urql";
-import { constants } from "ethers";
+import { constants, providers } from "ethers";
 
 import classes from "./farm.module.css";
 
@@ -159,17 +159,20 @@ const PoolSettings = ({
   };
 
   const doAction = async () => {
-    if (!input || loading) {
+    if (loading) {
       return;
     }
 
-    const amount = BigInt(input);
+    const amount = BigInt(input || "0");
     const cafe = await Cafe();
 
     setLoading(true);
-
     try {
-      if (action === "deposit") {
+      if (!address) {
+        const { ethereum } = window;
+        const provider = new providers.Web3Provider(ethereum);
+        await provider.send("eth_requestAccounts", []);
+      } else if (action === "deposit") {
         // Check allowance
         const token = await ERC20(pool.token);
         if (!(await token.checkAllowance(amount))) {
@@ -243,7 +246,7 @@ const PoolSettings = ({
           }`}
           onClick={doAction}
         >
-          {action}
+          {address ? action : "Connect wallet"}
         </button>
       </td>
     </tr>
@@ -326,15 +329,17 @@ const PoolTr = ({
         <td class="p-3">123.45%</td>
         {showPendingRent && <td class="p-3">{pending} RENT</td>}
         <td class="p-3 whitespace-nowrap">
-          <div class="btn btn-square btn-ghost">
-            <div
-              data-tip="Harvest"
-              class="tooltip tooltip-top"
-              onClick={harvest}
-            >
-              <GiftIcon />
+          {showPendingRent && (
+            <div class="btn btn-square btn-ghost">
+              <div
+                data-tip="Harvest"
+                class="tooltip tooltip-top"
+                onClick={harvest}
+              >
+                <GiftIcon />
+              </div>
             </div>
-          </div>
+          )}
           <div class="btn btn-square btn-ghost" onClick={onSettings}>
             <div data-tip="Deposit / withdraw" class="tooltip tooltip-top">
               <CogIcon />
