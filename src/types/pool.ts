@@ -11,4 +11,10 @@ export type Pool = {
   lastRewardBlock?: bigint;
 
   lp: LP;
+
+  user: {
+    balance: bigint;
+    debt: bigint;
+    rentHarvested: bigint;
+  };
 };

@@ -29,6 +29,11 @@ export const client = createClient({
           id: toBigInt,
           allocation: toBigInt,
         },
+        User: {
+          balance: toBigInt,
+          debt: toBigInt,
+          rentHarvested: toBigInt,
+        },
       },
     }),
     fetchExchange,

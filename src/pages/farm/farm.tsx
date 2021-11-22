@@ -19,8 +19,8 @@ import config from "../../../config/default";
 import { toBigInt } from "../../lib/ethereum";
 
 const FarmQuery = `
-  query {
-    cafe(id: "0x31a65c6d4eb07ad51e7afc890ac3b7be84df2ead") {
+  query ($cafe: ID!, $user: String!) {
+    cafe(id: $cafe) {
       id
       rentPerSecond
       totalAllocation
@@ -35,9 +35,10 @@ const FarmQuery = `
           name
           symbol
         }
-        users {
-          id
-          
+        users(where: { address: $user }) {
+          balance
+          debt
+          rentHarvested
         }
       }
     }
@@ -190,7 +191,6 @@ const PoolTr = ({
   rentPerSecond: bigint;
 }) => {
   const rentPerDay = (Number(rentPerSecond) * 60 * 60 * 24) / 1e18;
-  console.log({ rentPerSecond, rentPerDay });
   return (
     <>
       <tr class={`${active ? classes.selected : ""}`}>
@@ -236,6 +236,7 @@ type Cafe = {
 };
 
 export const FarmPage = (_: FarmPageProps) => {
+  const [address] = useStore.address();
   const [active, setActive] = useState<bigint | null>();
   const changeActive = (id: bigint) => {
     setActive(active === id ? null : id);
@@ -243,6 +244,10 @@ export const FarmPage = (_: FarmPageProps) => {
 
   const [result] = useQuery<{ cafe: Cafe }>({
     query: FarmQuery,
+    variables: {
+      cafe: config.cafe.address.toLowerCase(),
+      user: address,
+    },
   });
 
   if (!result.data) {
