@@ -9,16 +9,16 @@ import { Layout } from "./components/layout";
 // Pages
 import { PropertiesPage } from "./pages/properties";
 import { FarmPage } from "./pages/farm/farm";
+import { HomePage } from "./pages/home";
 
-export function App() {
-  return (
-    <Provider value={client}>
-      <Layout>
-        <Router primary={false}>
-          <FarmPage path="/" />
-          <PropertiesPage path="/properties" />
-        </Router>
-      </Layout>
-    </Provider>
-  );
-}
+export const App = () => (
+  <Provider value={client}>
+    <Layout>
+      <Router primary={false}>
+        <FarmPage path="/" />
+        <PropertiesPage path="/properties" />
+        <HomePage path="/home" />
+      </Router>
+    </Layout>
+  </Provider>
+);
