@@ -1,5 +1,5 @@
 import { JSX } from "preact";
-import { useState, useEffect } from "preact/hooks";
+import { useState, useEffect, useMemo } from "preact/hooks";
 import classnames from "classnames";
 import type { RouteComponentProps } from "@reach/router";
 import { useQuery } from "urql";
@@ -16,27 +16,71 @@ import { useStore } from "../../store";
 import { ERC20 } from "../../lib/erc20";
 
 import config from "../../../config/default";
-import { toBigInt } from "../../lib/ethereum";
+import { toBigInt, getProvider } from "../../lib/ethereum";
+import { GiftIcon } from "../../components/icons/gift";
+
+const round = (number: number) => Math.round(number * 100) / 100;
+
+const getMultiplier = (cafe: Cafe, from: bigint, to: bigint) => {
+  if (to <= cafe.bonusEndTimestamp) {
+    return (to - from) * cafe.bonusMultiplier;
+  } else if (from >= cafe.bonusEndTimestamp) {
+    return to - from;
+  }
+
+  return (
+    (cafe.bonusEndTimestamp - from) * cafe.bonusMultiplier +
+    to -
+    cafe.bonusEndTimestamp
+  );
+};
+
+const pendingRent = (cafe: Cafe, pool: Pool) => {
+  if (!pool.user || !pool.total) {
+    return 0n;
+  }
+
+  let accRentPerShare = pool.accRentPerShare;
+
+  const to = BigInt(Date.now()) / 1000n;
+  const multiplier = getMultiplier(cafe, pool.lastRewardTimestamp, to);
+  const reward =
+    (multiplier * cafe.rentPerSecond * pool.allocation) / cafe.totalAllocation;
+
+  accRentPerShare += (reward * cafe.accRentPrecision) / pool.total;
+
+  return (
+    (pool.user.total * accRentPerShare) / cafe.accRentPrecision - pool.user.debt
+  );
+};
 
 const FarmQuery = `
-  query ($cafe: ID!, $user: String!) {
+  query ($cafe: ID!, $user: String) {
     cafe(id: $cafe) {
       id
       rentPerSecond
       totalAllocation
       withdrawFeePrecision
+      accRentPrecision
+      bonusEndTimestamp
+      bonusMultiplier
       pools {
         id
         token
+        total
         allocation
         withdrawFee
+        accRentPerShare
+        lastRewardTimestamp
         lp {
           id
           name
           symbol
         }
         users(where: { address: $user }) {
+          id
           balance
+          total
           debt
           rentHarvested
         }
@@ -70,13 +114,22 @@ const Hero = () => (
   </div>
 );
 
-const PoolSettings = ({ pool }: { pool: Pool }) => {
+type ActionType = "deposit" | "withdraw";
+
+const PoolSettings = ({
+  pool,
+  refetch,
+}: {
+  pool: Pool;
+  refetch: () => void;
+}) => {
   const [address] = useStore.address();
   const [balance, setBalance] = useState<bigint>(0n);
   const [input, setInput] = useState<string>();
-  const [action, setAction] = useState<"deposit" | "withdraw">("deposit");
+  const [action, setAction] = useState<ActionType>("deposit");
   const buttonClasses = ["btn", "btn-outline", "btn-sm"];
   const percentages = [25, 50, 75, 100];
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!address) {
@@ -90,9 +143,8 @@ const PoolSettings = ({ pool }: { pool: Pool }) => {
   }, [pool.token, address]);
 
   const choosePercentage = (percentage: number) => {
-    if (action === "deposit") {
-      setInput(((balance * BigInt(percentage)) / 100n).toString());
-    }
+    const amount = action === "deposit" ? balance : pool?.user?.balance || 0n;
+    setInput(((amount * BigInt(percentage)) / 100n).toString());
   };
 
   const changeInput = ({
@@ -101,38 +153,52 @@ const PoolSettings = ({ pool }: { pool: Pool }) => {
     setInput(currentTarget.value);
   };
 
+  const changeAction = (action: ActionType) => {
+    setAction(action);
+    setInput("");
+  };
+
   const doAction = async () => {
-    if (!input) {
+    if (!input || loading) {
       return;
     }
 
-    if (action === "deposit") {
-      const amount = BigInt(input);
+    const amount = BigInt(input);
+    const cafe = await Cafe();
 
-      // Check allowance
-      const token = await ERC20(pool.token);
-      if (!(await token.checkAllowance(amount))) {
-        await token.approve(
-          config.cafe.address,
-          toBigInt(constants.MaxUint256)
-        );
+    setLoading(true);
+
+    try {
+      if (action === "deposit") {
+        // Check allowance
+        const token = await ERC20(pool.token);
+        if (!(await token.checkAllowance(amount))) {
+          await token.approve(
+            config.cafe.address,
+            toBigInt(constants.MaxUint256)
+          );
+        }
+
+        // Initiate deposit
+        await cafe.deposit(pool.id, amount);
+      } else if (action === "withdraw") {
+        await cafe.withdraw(pool.id, amount);
       }
 
-      console.log(pool.id, amount);
-
-      // Initiate deposit
-      const cafe = await Cafe();
-      await cafe.deposit(pool.id, amount);
+      setInput("0");
+      refetch();
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <tr class={classes.selected}>
-      <td colSpan={5} class="p-3 text-center">
+      <td colSpan={6} class="p-3 text-center">
         <div class="flex justify-between">
           <div class="btn-group mb-4">
             <button
-              onClick={() => setAction("deposit")}
+              onClick={() => changeAction("deposit")}
               class={classnames(
                 ...buttonClasses,
                 action === "deposit" && "btn-active"
@@ -141,7 +207,7 @@ const PoolSettings = ({ pool }: { pool: Pool }) => {
               Deposit
             </button>
             <button
-              onClick={() => setAction("withdraw")}
+              onClick={() => changeAction("withdraw")}
               class={classnames(
                 ...buttonClasses,
                 action === "withdraw" && "btn-active"
@@ -171,7 +237,12 @@ const PoolSettings = ({ pool }: { pool: Pool }) => {
           />
           <span class="whitespace-nowrap">{getPoolName(pool)}</span>
         </label>
-        <button class="btn btn-primary w-full" onClick={doAction}>
+        <button
+          class={`btn btn-primary w-full ${
+            loading ? "btn-disabled loading" : ""
+          }`}
+          onClick={doAction}
+        >
           {action}
         </button>
       </td>
@@ -180,17 +251,48 @@ const PoolSettings = ({ pool }: { pool: Pool }) => {
 };
 
 const PoolTr = ({
+  cafe,
   pool,
   active,
   onSettings,
   rentPerSecond,
+  refetch,
 }: {
+  cafe: Cafe;
   pool: Pool;
   active: boolean;
   onSettings: () => void;
   rentPerSecond: bigint;
+  refetch: () => void;
 }) => {
-  const rentPerDay = (Number(rentPerSecond) * 60 * 60 * 24) / 1e18;
+  const bonus =
+    Date.now() / 1000 < cafe.bonusEndTimestamp
+      ? Number(cafe.bonusMultiplier)
+      : 1;
+  const rentPrecision = 1e18;
+  const rentPerDay =
+    ((Number(rentPerSecond) * 60 * 60 * 24) / rentPrecision) * bonus;
+
+  const [pending, setPending] = useState(0);
+
+  useEffect(() => {
+    const run = () => setPending(round(Number(pendingRent(cafe, pool)) / 1e18));
+    const interval = setInterval(run, 1000);
+    run();
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [cafe]);
+
+  const harvest = async () => {
+    const cafe = await Cafe();
+    try {
+      await cafe.harvest(pool.id);
+      refetch();
+    } catch (err) {}
+  };
+
   return (
     <>
       <tr class={`${active ? classes.selected : ""}`}>
@@ -214,15 +316,27 @@ const PoolTr = ({
           </div>
         </td>
         <td class="p-3">$123,456,789</td>
-        <td class="p-3">{Math.round(rentPerDay * 100) / 100} RENT / day</td>
+        <td class="p-3">{round(rentPerDay)} RENT / day</td>
         <td class="p-3">123.45%</td>
-        <td class="p-3">
+        <td class="p-3">{pending} RENT</td>
+        <td class="p-3 whitespace-nowrap">
+          <div class="btn btn-square btn-ghost">
+            <div
+              data-tip="Harvest"
+              class="tooltip tooltip-top"
+              onClick={harvest}
+            >
+              <GiftIcon />
+            </div>
+          </div>
           <div class="btn btn-square btn-ghost" onClick={onSettings}>
-            <CogIcon />
+            <div data-tip="Deposit / withdraw" class="tooltip tooltip-top">
+              <CogIcon />
+            </div>
           </div>
         </td>
       </tr>
-      {active && <PoolSettings pool={pool} />}
+      {active && <PoolSettings pool={pool} refetch={refetch} />}
     </>
   );
 };
@@ -232,6 +346,9 @@ type Cafe = {
   rentPerSecond: bigint;
   totalAllocation: bigint;
   withdrawFeePrecision: bigint;
+  accRentPrecision: bigint;
+  bonusEndTimestamp: bigint;
+  bonusMultiplier: bigint;
   pools: [Pool];
 };
 
@@ -242,7 +359,7 @@ export const FarmPage = (_: FarmPageProps) => {
     setActive(active === id ? null : id);
   };
 
-  const [result] = useQuery<{ cafe: Cafe }>({
+  const [result, refresh] = useQuery<{ cafe: Cafe }>({
     query: FarmQuery,
     variables: {
       cafe: config.cafe.address.toLowerCase(),
@@ -250,12 +367,33 @@ export const FarmPage = (_: FarmPageProps) => {
     },
   });
 
-  if (!result.data) {
+  const refetch = () => refresh({ requestPolicy: "network-only" });
+
+  useEffect(() => {
+    const provider = getProvider("ws");
+    provider.on("block", refetch);
+    return () => {
+      provider.off("block", refetch);
+    };
+  }, []);
+
+  const cafe = useMemo(() => {
+    if (!result.data) {
+      return null;
+    }
+
+    const { cafe: data } = result.data;
+    data.pools = data.pools.map((pool) => ({
+      ...pool,
+      user: (pool as any).users?.[0],
+    })) as [Pool];
+
+    return data;
+  }, [result.data]);
+
+  if (!cafe) {
     return <p>Loading...</p>;
   }
-
-  const { cafe } = result.data;
-  const { pools } = cafe;
 
   return (
     <>
@@ -272,19 +410,22 @@ export const FarmPage = (_: FarmPageProps) => {
                   <th class="p-3">TVL</th>
                   <th class="p-3">Rewards</th>
                   <th class="p-3">APR</th>
+                  <th class="p-3">Pending RENT</th>
                   <th class="p-3 w-0">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {pools.map((pool) => (
+                {cafe.pools.map((pool) => (
                   <PoolTr
                     rentPerSecond={
                       (pool.allocation * cafe.rentPerSecond) /
                       cafe.totalAllocation
                     }
+                    cafe={cafe}
                     pool={pool}
                     active={active === pool.id}
                     onSettings={() => changeActive(pool.id)}
+                    refetch={refetch}
                   />
                 ))}
               </tbody>

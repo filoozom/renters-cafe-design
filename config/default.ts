@@ -1,7 +1,10 @@
 export default {
-  rpc: "http://srv02.apyos.com:9661/ext/bc/C/rpc",
+  rpc: {
+    http: "http://srv02.apyos.com:9661/ext/bc/C/rpc",
+    ws: "ws://srv02.apyos.com:9661/ext/bc/C/ws",
+  },
   cafe: {
-    address: "0x389BBE4643bd4942c254752199E70b70059CeB37",
+    address: "0xBc45cA09c3d00a9bA25eB08b70849Db43A76BE03",
   },
   lps: {
     nameToType: {

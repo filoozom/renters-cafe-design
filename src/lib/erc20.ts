@@ -1,10 +1,8 @@
-import { providers, Contract } from "ethers";
+import { Contract } from "ethers";
 
 import abi from "../data/abis/erc20.json";
 import config from "../../config/default";
 import { getSigner } from "./ethereum";
-
-const provider = new providers.JsonRpcProvider(config.rpc);
 
 export const ERC20 = async (address: string) => {
   const signer = getSigner();

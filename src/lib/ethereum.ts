@@ -1,4 +1,5 @@
 import { BigNumber, providers } from "ethers";
+import config from "../../config/default";
 
 export const toBigInt = (value: BigNumber) =>
   BigInt(BigNumber.from(value).toString());
@@ -25,4 +26,13 @@ export const getSigner = () => {
   const { ethereum } = window;
   const provider = new providers.Web3Provider(ethereum);
   return provider.getSigner();
+};
+
+export const getProvider = (type: "http" | "ws") => {
+  switch (type) {
+    case "http":
+      return new providers.JsonRpcProvider(config.rpc[type]);
+    case "ws":
+      return new providers.WebSocketProvider(config.rpc[type]);
+  }
 };
