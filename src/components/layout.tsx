@@ -104,10 +104,10 @@ export const Layout = ({ children }: LayoutProps) => (
       <footer class="flex items-center p-4 bg-neutral text-neutral-content justify-between">
         <p>No rights reserved :-)</p>
         <div class="flex gap-4">
-          <a>
+          <a target="_blank" href="https://twitter.com/rentercafe">
             <TwitterIcon />
           </a>
-          <a>
+          <a target="_blank" href="https://discord.gg/8C52Auxz">
             <DiscordIcon />
           </a>
         </div>
