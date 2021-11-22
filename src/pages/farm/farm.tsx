@@ -257,6 +257,7 @@ const PoolTr = ({
   onSettings,
   rentPerSecond,
   refetch,
+  showPendingRent,
 }: {
   cafe: Cafe;
   pool: Pool;
@@ -264,6 +265,7 @@ const PoolTr = ({
   onSettings: () => void;
   rentPerSecond: bigint;
   refetch: () => void;
+  showPendingRent: boolean;
 }) => {
   const bonus =
     Date.now() / 1000 < cafe.bonusEndTimestamp
@@ -276,6 +278,10 @@ const PoolTr = ({
   const [pending, setPending] = useState(0);
 
   useEffect(() => {
+    if (!showPendingRent) {
+      return;
+    }
+
     const run = () => setPending(round(Number(pendingRent(cafe, pool)) / 1e18));
     const interval = setInterval(run, 1000);
     run();
@@ -283,7 +289,7 @@ const PoolTr = ({
     return () => {
       clearInterval(interval);
     };
-  }, [cafe]);
+  }, [cafe, showPendingRent]);
 
   const harvest = async () => {
     const cafe = await Cafe();
@@ -318,7 +324,7 @@ const PoolTr = ({
         <td class="p-3">$123,456,789</td>
         <td class="p-3">{round(rentPerDay)} RENT / day</td>
         <td class="p-3">123.45%</td>
-        <td class="p-3">{pending} RENT</td>
+        {showPendingRent && <td class="p-3">{pending} RENT</td>}
         <td class="p-3 whitespace-nowrap">
           <div class="btn btn-square btn-ghost">
             <div
@@ -359,11 +365,13 @@ export const FarmPage = (_: FarmPageProps) => {
     setActive(active === id ? null : id);
   };
 
+  console.log(address);
+
   const [result, refresh] = useQuery<{ cafe: Cafe }>({
     query: FarmQuery,
     variables: {
       cafe: config.cafe.address.toLowerCase(),
-      user: address,
+      user: address || null,
     },
   });
 
@@ -410,7 +418,7 @@ export const FarmPage = (_: FarmPageProps) => {
                   <th class="p-3">TVL</th>
                   <th class="p-3">Rewards</th>
                   <th class="p-3">APR</th>
-                  <th class="p-3">Pending RENT</th>
+                  {address && <th class="p-3">Pending RENT</th>}
                   <th class="p-3 w-0">Action</th>
                 </tr>
               </thead>
@@ -426,6 +434,7 @@ export const FarmPage = (_: FarmPageProps) => {
                     active={active === pool.id}
                     onSettings={() => changeActive(pool.id)}
                     refetch={refetch}
+                    showPendingRent={!!address}
                   />
                 ))}
               </tbody>
