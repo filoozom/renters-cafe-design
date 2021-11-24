@@ -1,9 +1,9 @@
 import { Contract } from "ethers";
 
-import abi from "../data/abis/lp.json";
-import config from "../../config/default";
-import type { LP as LPType } from "../types/lp";
-import { getSigner, toBigInt } from "./ethereum";
+import abi from "../../data/abis/lp.json";
+import config from "../../../config/default";
+import type { LP as LPType } from "../../types/lp";
+import { getSigner, toBigInt } from "../ethereum";
 
 export const LP = async (address: string) => {
   const signer = getSigner();

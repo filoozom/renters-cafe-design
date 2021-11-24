@@ -9,17 +9,16 @@ import classes from "./farm.module.css";
 
 import type { Pool } from "../../types/pool";
 import { CogIcon } from "../../components/icons/cog";
-import { Cafe } from "../../lib/cafe";
-import { LP } from "../../lib/lp";
+import { Cafe } from "../../lib/contracts/cafe";
+import { LP } from "../../lib/contracts/lp";
 
 import { useStore } from "../../store";
-import { ERC20 } from "../../lib/erc20";
+import { ERC20 } from "../../lib/contracts/erc20";
 
 import config from "../../../config/default";
 import { toBigInt, getProvider } from "../../lib/ethereum";
 import { GiftIcon } from "../../components/icons/gift";
-
-const round = (number: number) => Math.round(number * 100) / 100;
+import { round } from "../../lib/tools";
 
 const getMultiplier = (cafe: Cafe, from: bigint, to: bigint) => {
   if (to <= cafe.bonusEndTimestamp) {
@@ -175,11 +174,12 @@ const PoolSettings = ({
       } else if (action === "deposit") {
         // Check allowance
         const token = await ERC20(pool.token);
-        if (!(await token.checkAllowance(amount))) {
-          await token.approve(
+        if (!(await token.checkAllowance(config.cafe.address, amount))) {
+          const tx = await token.approve(
             config.cafe.address,
             toBigInt(constants.MaxUint256)
           );
+          await tx.wait();
         }
 
         // Initiate deposit

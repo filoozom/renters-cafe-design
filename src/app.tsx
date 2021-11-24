@@ -10,6 +10,7 @@ import { Layout } from "./components/layout";
 import { PropertiesPage } from "./pages/properties";
 import { FarmPage } from "./pages/farm/farm";
 import { HomePage } from "./pages/home";
+import { AuctionsPage } from "./pages/auctions";
 
 export const App = () => (
   <Provider value={client}>
@@ -17,6 +18,7 @@ export const App = () => (
       <Router primary={false}>
         <FarmPage path="/" />
         <PropertiesPage path="/properties" />
+        <AuctionsPage path="/auctions" />
         <HomePage path="/home" />
       </Router>
     </Layout>
