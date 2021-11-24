@@ -4,7 +4,7 @@ export default {
     ws: "ws://srv02.apyos.com:9661/ext/bc/C/ws",
   },
   cafe: {
-    address: "0xBc45cA09c3d00a9bA25eB08b70849Db43A76BE03",
+    address: "0x4535B97F1e7c176683E34dC6661e852bb5840CA9",
   },
   lps: {
     nameToType: {
