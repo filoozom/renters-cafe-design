@@ -10,16 +10,17 @@ import { round } from "../lib/tools";
 import { PropertyAuction } from "../lib/contracts/property-auction";
 import { ERC20 } from "../lib/contracts/erc20";
 import { constants } from "ethers";
+import { SadIcon } from "../components/icons/sad";
 
 const AuctionsQuery = `
-  query ($propertyAuction: ID!) {
-    propertyAuctionFactory(id: $propertyAuction) {
+  query ($propertyAuction: ID!, $maxStartTimestamp: BigInt!) {
+    propertyAuctionFactory(id: $propertyAuction,) {
       id
       cuts {
         user
         amount
       }
-      auctions(where: { done: false }) {
+      auctions(where: { done: false, startTimestamp_lt: $maxStartTimestamp }) {
         id
         startPrice
         endPrice
@@ -176,7 +177,7 @@ const PropertyCard = ({ auction }: { auction: PropertyAuction }) => {
     useState<ReturnType<typeof intervalToDuration>>();
 
   const startDate = useMemo(
-    () => new Date(Number(auction.startTimestamp)),
+    () => new Date(1000 * Number(auction.startTimestamp)),
     [auction.startTimestamp]
   );
 
@@ -344,6 +345,7 @@ const PropertyCards = () => {
     query: AuctionsQuery,
     variables: {
       propertyAuction: config.propertyAuction.address.toLowerCase(),
+      maxStartTimestamp: Math.round(Date.now() / 1000 + 24 * 60 * 60),
     },
   });
 
@@ -362,18 +364,29 @@ const PropertyCards = () => {
   }
 
   const { propertyAuctionFactory: pa } = result.data;
-  pa.auctions;
 
   return (
     <div class="hero">
       <div class="max-w-5xl mx-auto text-center hero-content">
-        <div>
+        <div class="mb-2">
           <PropertyCardMenu />
-          <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {pa.auctions.map((auction) => (
-              <PropertyCard auction={auction} />
-            ))}
-          </div>
+          {pa.auctions.length ? (
+            <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {pa.auctions.map((auction) => (
+                <PropertyCard auction={auction} />
+              ))}
+            </div>
+          ) : (
+            <div class="text-center bg-base-200 p-8 rounded-3xl">
+              <div class="w-64 mx-auto mb-4">
+                <SadIcon />
+              </div>
+              <p>
+                There are currently no auctions going on, nor are there auctions
+                starting in the next 24 hours...
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
