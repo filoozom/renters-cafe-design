@@ -13,7 +13,7 @@ export default {
     address: "0x41640A9fCc16245cc397555E04AbA2D312146f9F",
   },
   stealAuction: {
-    address: "0x6b7Af0A712fe43D2F8339A107Ba3f52366e2E3CA",
+    address: "0x45b1d849FFE19CD99005DfAC4bB9993cDa8Af062",
   },
   rent: {
     address: "0xEe866d2cFCFED21902E3b871f4eD388E71970ddc",

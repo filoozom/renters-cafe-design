@@ -7,47 +7,37 @@ import config from "../../config/default";
 import { getProvider, toBigInt } from "../lib/ethereum";
 import classNames from "classnames";
 import { round } from "../lib/tools";
-import { PropertyAuction } from "../lib/contracts/property-auction";
+import { StealAuction } from "../lib/contracts/steal-auction";
 import { ERC20 } from "../lib/contracts/erc20";
 import { constants } from "ethers";
 import { SadIcon } from "../components/icons/sad";
 
-const AuctionsQuery = `
-  query ($propertyAuction: ID!, $maxStartTimestamp: BigInt!) {
-    propertyAuctionFactory(id: $propertyAuction,) {
-      id
-      cuts {
-        user
-        amount
-      }
-      auctions(where: { done: false, startTimestamp_lt: $maxStartTimestamp }) {
+const StealingQuery = `
+  query ($stealableProperties: ID!) {
+    stealablePropertiesFactory(id: $stealableProperties) {
+      properties(where: {owners_not: []}) {
         id
-        startPrice
-        endPrice
-        startTimestamp
-        duration
-        content {
+        cap
+        minted
+        pools {
           id
-          count
-          weight
-          property {
-            id
-            cap
-            minted
-            pools {
-              id
-            }
-            multiplier
-            bonus
-            protection
-            startRatio
-            endRatio
-            duration
-            keepRatio            
-            factory {
-              uri
-            }
-          }
+        }
+        multiplier
+        bonus
+        protection
+        startRatio
+        endRatio
+        duration
+        keepRatio            
+        factory {
+          uri
+        }
+        owners {
+          id
+          user
+          protectedUntil
+          since
+          price
         }
       }
     }
@@ -58,7 +48,15 @@ type Pool = {
   id: bigint;
 };
 
-type Property = {
+type StealablePropertyOwner = {
+  id: string;
+  user: string;
+  protectedUntil: bigint;
+  since: bigint;
+  price: bigint;
+};
+
+type StealableProperty = {
   id: bigint;
   name: string;
   cap: bigint;
@@ -74,54 +72,37 @@ type Property = {
   factory: {
     uri: string;
   };
+  owners: StealablePropertyOwner[];
 };
 
-type PropertyAuctionCut = {
-  user: string;
-  amount: bigint;
+type StealablePropertiesFactory = {
+  properties: StealableProperty[];
 };
 
-type PropertyAuctionContent = {
-  id: string;
-  count: bigint;
-  weight: bigint;
-  property: Property;
-};
-
-type PropertyAuction = {
-  id: bigint;
-  startPrice: bigint;
-  endPrice: bigint;
-  startTimestamp: bigint;
-  duration: bigint;
-  content: PropertyAuctionContent[];
-};
-
-type PropertyAuctionFactory = {
-  id: string;
-  cuts: PropertyAuctionCut[];
-  auctions: PropertyAuction[];
-};
-
-const currentPrice = (auction: PropertyAuction) => {
+// TODO: Integrate multiplierPrecision
+const currentPrice = (property: StealableProperty) => {
   const now = BigInt(Math.round(Date.now() / 1000));
-  const secondsElapsed = now - auction.startTimestamp;
+  const owner = property.owners[0];
+  const secondsElapsed = now - owner.protectedUntil;
 
-  if (secondsElapsed > auction.duration) {
-    return auction.endPrice;
+  const endPrice = (owner.price * property.endRatio) / 10000n;
+  const startPrice = (owner.price * property.startRatio) / 10000n;
+
+  if (secondsElapsed > property.duration) {
+    return endPrice;
   }
   if (secondsElapsed < 0) {
-    return auction.startPrice;
+    return startPrice;
   }
 
-  const totalPriceChange = auction.endPrice - auction.startPrice;
+  const totalPriceChange = endPrice - startPrice;
   const currentPriceChange =
-    (totalPriceChange * secondsElapsed) / auction.duration;
+    (totalPriceChange * secondsElapsed) / property.duration;
 
-  return auction.startPrice + currentPriceChange;
+  return startPrice + currentPriceChange;
 };
 
-const getPropertyMetadata = async (property: Property) => {
+const getPropertyMetadata = async (property: StealableProperty) => {
   const response = await fetch(
     property.factory.uri.replace(
       "{id}",
@@ -164,10 +145,7 @@ const Hero = () => (
   </div>
 );
 
-const PropertyCard = ({ auction }: { auction: PropertyAuction }) => {
-  // TODO: Add support for multiple properties in the same auction
-  const { property } = auction.content[0];
-
+const PropertyCard = ({ property }: { property: StealableProperty }) => {
   // State
   const [loading, setLoading] = useState(false);
   const [metadata, setMetadata] = useState<{ name: string; image: string }>();
@@ -177,8 +155,8 @@ const PropertyCard = ({ auction }: { auction: PropertyAuction }) => {
     useState<ReturnType<typeof intervalToDuration>>();
 
   const startDate = useMemo(
-    () => new Date(1000 * Number(auction.startTimestamp)),
-    [auction.startTimestamp]
+    () => new Date(1000 * Number(property.owners[0].protectedUntil)),
+    [property.owners[0].protectedUntil]
   );
 
   useEffect(() => {
@@ -195,7 +173,7 @@ const PropertyCard = ({ auction }: { auction: PropertyAuction }) => {
     const refresh = () => {
       const end = differenceInMilliseconds(startDate, new Date());
       setCountdown(intervalToDuration({ start: 0, end }));
-      setPrice(currentPrice(auction));
+      setPrice(currentPrice(property));
     };
     refresh();
 
@@ -229,8 +207,8 @@ const PropertyCard = ({ auction }: { auction: PropertyAuction }) => {
       }
 
       // Buy
-      const propertyAuction = await PropertyAuction();
-      await propertyAuction.buy(auction.id, price);
+      const propertyAuction = await StealAuction();
+      await propertyAuction.buy(property.id, price);
     } finally {
       setLoading(false);
     }
@@ -240,7 +218,7 @@ const PropertyCard = ({ auction }: { auction: PropertyAuction }) => {
     <div class={`card bordered shadow ${isLocked && "opacity-50"}`}>
       {isLocked && (
         <button class="btn absolute top-4 right-4 indicator">
-          upcoming
+          protected
           <div class="badge badge-secondary ml-2">
             <span class="font-mono countdown">
               <span style={{ "--value": countdown?.hours }}></span>:
@@ -340,12 +318,11 @@ const PropertyCardMenu = () => (
 
 const PropertyCards = () => {
   const [result, refresh] = useQuery<{
-    propertyAuctionFactory: PropertyAuctionFactory;
+    stealablePropertiesFactory: StealablePropertiesFactory;
   }>({
-    query: AuctionsQuery,
+    query: StealingQuery,
     variables: {
-      propertyAuction: config.propertyAuction.address.toLowerCase(),
-      maxStartTimestamp: Math.round(Date.now() / 1000 + 24 * 60 * 60),
+      stealableProperties: config.stealableProperties.address.toLowerCase(),
     },
   });
 
@@ -363,17 +340,17 @@ const PropertyCards = () => {
     return <p>Loading...</p>;
   }
 
-  const { propertyAuctionFactory: pa } = result.data;
+  const { stealablePropertiesFactory: sp } = result.data;
 
   return (
     <div class="hero">
       <div class="max-w-5xl mx-auto text-center hero-content">
         <div class="mb-2">
           <PropertyCardMenu />
-          {pa.auctions.length ? (
+          {sp.properties.length ? (
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {pa.auctions.map((auction) => (
-                <PropertyCard auction={auction} />
+              {sp.properties.map((property) => (
+                <PropertyCard property={property} />
               ))}
             </div>
           ) : (
@@ -393,9 +370,9 @@ const PropertyCards = () => {
   );
 };
 
-type PropertiesPageProps = RouteComponentProps;
+type StealingPageProps = RouteComponentProps;
 
-export const AuctionsPage = (_: PropertiesPageProps) => (
+export const StealingPage = (_: StealingPageProps) => (
   <>
     <Hero />
     <PropertyCards />

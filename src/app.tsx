@@ -11,6 +11,7 @@ import { PropertiesPage } from "./pages/properties";
 import { FarmPage } from "./pages/farm/farm";
 import { HomePage } from "./pages/home";
 import { AuctionsPage } from "./pages/auctions";
+import { StealingPage } from "./pages/stealing";
 
 export const App = () => (
   <Provider value={client}>
@@ -19,6 +20,7 @@ export const App = () => (
         <FarmPage path="/" />
         <PropertiesPage path="/properties" />
         <AuctionsPage path="/auctions" />
+        <StealingPage path="/stealing" />
         <HomePage path="/home" />
       </Router>
     </Layout>
