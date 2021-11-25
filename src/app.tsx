@@ -7,7 +7,6 @@ import { client, Provider } from "./lib/urql";
 import { Layout } from "./components/layout";
 
 // Pages
-import { PropertiesPage } from "./pages/properties";
 import { FarmPage } from "./pages/farm/farm";
 import { HomePage } from "./pages/home";
 import { AuctionsPage } from "./pages/auctions";
@@ -18,7 +17,6 @@ export const App = () => (
     <Layout>
       <Router primary={false}>
         <FarmPage path="/" />
-        <PropertiesPage path="/properties" />
         <AuctionsPage path="/auctions" />
         <StealingPage path="/stealing" />
         <HomePage path="/home" />

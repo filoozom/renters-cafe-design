@@ -97,9 +97,6 @@ export const Layout = ({ children }: LayoutProps) => (
             <Link className="btn btn-ghost rounded-btn" to="/stealing">
               Stealing
             </Link>
-            <Link className="btn btn-ghost rounded-btn" to="/properties">
-              Properties
-            </Link>
             <a
               className="btn btn-ghost rounded-btn"
               href="https://docs.renter.cafe/"
@@ -136,9 +133,6 @@ export const Layout = ({ children }: LayoutProps) => (
         </li>
         <li>
           <Link to="/stealing">Stealing</Link>
-        </li>
-        <li>
-          <Link to="/properties">Properties</Link>
         </li>
         <li>
           <a href="https://docs.renter.cafe/">Docs</a>
