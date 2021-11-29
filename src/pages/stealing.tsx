@@ -196,19 +196,17 @@ const PropertyCard = ({ property }: { property: StealableProperty }) => {
     try {
       // Check allowance
       const token = await ERC20(config.rent.address);
-      if (
-        !(await token.checkAllowance(config.propertyAuction.address, price))
-      ) {
+      if (!(await token.checkAllowance(config.stealAuction.address, price))) {
         const tx = await token.approve(
-          config.propertyAuction.address,
+          config.stealAuction.address,
           toBigInt(constants.MaxUint256)
         );
         await tx.wait();
       }
 
       // Buy
-      const propertyAuction = await StealAuction();
-      await propertyAuction.buy(property.id, price);
+      const stealAuction = await StealAuction();
+      await stealAuction.buy(property.id, price);
     } finally {
       setLoading(false);
     }
