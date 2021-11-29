@@ -16,6 +16,7 @@
     "date-fns": "^2.25.0",
     "ethers": "^5.5.1",
     "graphql": "^15.7.2",
+    "graphql-web-lite": "^15.5.1002",
     "postcss": "^8.3.11",
     "preact": "^10.5.13",
     "tailwindcss": "^2.2.19",
