@@ -44,13 +44,11 @@ const Hero = () => {
     <div class="hero p-32 bg-gradient-to-br from-primary to-accent h-full">
       <div class="text-center hero-content text-accent-content">
         <div class="max-w-lg">
-          <h1 class="mb-8 text-5xl font-bold">
-            Create, sell and collect digital items
-          </h1>
+          <h1 class="mb-8 text-5xl font-bold">Welcome to Renters.cafe</h1>
           <p class="mb-8">
-            Unit of data stored on a digital ledger, called a blockchain, that
-            certifies a digital asset to be unique and therefore not
-            interchangeable
+            Whether you are a fan of yield farming, NFTs, or just looking for a
+            token to buy and hodl, we have something for you. So come on in and
+            check out our open houses as soon as the countdown expires!
           </p>
           <div class="grid grid-flow-col gap-5 text-center auto-cols-max mb-8 justify-center">
             <div class="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
