@@ -96,7 +96,7 @@ const getPoolName = (pool: Pool) =>
 const getPoolName = (pool: any) => pool.token.substr(2, 4);
 
 const Hero = () => (
-  <div class="hero p-32 bg-gradient-to-br from-primary to-secondary">
+  <div class="hero p-32 bg-gradient-to-br from-primary to-accent">
     <div class="text-center hero-content text-accent-content">
       <div class="max-w-lg">
         <h1 class="mb-8 text-5xl font-bold">

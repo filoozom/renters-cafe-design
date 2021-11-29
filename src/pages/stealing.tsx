@@ -48,7 +48,7 @@ type StealablePropertiesFactory = {
 };
 
 const Hero = () => (
-  <div class="hero p-32 bg-gradient-to-br from-primary to-accent">
+  <div class="hero p-32 bg-gradient-to-br from-primary to-secondary">
     <div class="text-center hero-content text-accent-content">
       <div class="max-w-lg">
         <h1 class="mb-8 text-5xl font-bold">
