@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "build:only-home": "tsc && vite build home",
+    "build": "node create-index.js main && npm run vite:build",
+    "build:only-home": "node create-index.js home && npm run vite:build",
+    "vite:build": "tsc && vite build",
     "serve": "vite preview"
   },
   "dependencies": {

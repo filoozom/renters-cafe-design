@@ -1,5 +1,15 @@
 import { render } from "preact";
-import { App } from "./home-app";
 import "./index.css";
 
-render(<App />, document.getElementById("app")!);
+// Components
+import { Layout } from "./components/layout";
+
+// Pages
+import { HomePage } from "./pages/home";
+
+render(
+  <Layout>
+    <HomePage />
+  </Layout>,
+  document.getElementById("app")!
+);
