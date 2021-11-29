@@ -15,6 +15,7 @@ import { useStore } from "../store";
 
 // Config
 import config from "../../config/default";
+import { Alerts } from "./alerts/alerts";
 
 const WalletButton = () => {
   const { ethereum } = window;
@@ -83,7 +84,6 @@ export const Layout = ({ children }: LayoutProps) => {
   useEffect(() => {
     const run = () => {
       const difference = differenceInMilliseconds(releaseDate, new Date());
-      console.log({ difference });
       if (difference < 0) {
         setLaunched(true);
       } else {
@@ -92,8 +92,6 @@ export const Layout = ({ children }: LayoutProps) => {
     };
     run();
   }, [releaseDate]);
-
-  console.log({ launched });
 
   return (
     <div class="drawer min-h-screen">
@@ -172,6 +170,8 @@ export const Layout = ({ children }: LayoutProps) => {
           </li>
         </ul>
       </div>
+
+      <Alerts />
     </div>
   );
 };

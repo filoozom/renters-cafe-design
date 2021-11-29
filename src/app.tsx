@@ -11,16 +11,19 @@ import { FarmPage } from "./pages/farm/farm";
 import { HomePage } from "./pages/home";
 import { AuctionsPage } from "./pages/auctions";
 import { StealingPage } from "./pages/stealing";
+import { AlertsProvider } from "./components/alerts/alerts";
 
 export const App = () => (
   <Provider value={client}>
-    <Layout>
-      <Router primary={false} style={{ height: "100%" }}>
-        <FarmPage path="/" />
-        <AuctionsPage path="/auctions" />
-        <StealingPage path="/stealing" />
-        <HomePage path="/home" />
-      </Router>
-    </Layout>
+    <AlertsProvider>
+      <Layout>
+        <Router primary={false} style={{ height: "100%" }}>
+          <FarmPage path="/" />
+          <AuctionsPage path="/auctions" />
+          <StealingPage path="/stealing" />
+          <HomePage path="/home" />
+        </Router>
+      </Layout>
+    </AlertsProvider>
   </Provider>
 );
