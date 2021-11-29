@@ -144,7 +144,7 @@ export const Layout = ({ children }: LayoutProps) => {
             <a target="_blank" href="https://twitter.com/rentercafe">
               <TwitterIcon />
             </a>
-            <a target="_blank" href="https://discord.gg/8C52Auxz">
+            <a target="_blank" href="https://discord.gg/RPZNtweHEF">
               <DiscordIcon />
             </a>
           </div>
