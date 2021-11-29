@@ -7,6 +7,8 @@ import {
   Cache,
 } from "@urql/exchange-graphcache";
 
+import config from "../../config/default";
+
 const toBigInt = (
   parent: DataFields,
   _args: Variables,
@@ -15,7 +17,7 @@ const toBigInt = (
 ): BigInt => BigInt(parent[info.fieldName] as string);
 
 export const client = createClient({
-  url: "http://srv02.apyos.com:8000/subgraphs/name/renter-cafe/cafe",
+  url: config.subgraph,
   exchanges: [
     dedupExchange,
     cacheExchange({

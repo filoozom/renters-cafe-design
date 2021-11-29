@@ -1,9 +1,11 @@
 {
+  "private": true,
   "name": "design",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:only-home": "tsc && vite build home",
     "serve": "vite preview"
   },
   "dependencies": {

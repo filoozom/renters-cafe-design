@@ -14,7 +14,7 @@ import { Logo } from "./logo";
 import { useStore } from "../store";
 
 // Config
-import config from "../../config/default";
+import { onlyHome, releaseDate } from "../../config/default";
 import { Alerts } from "./alerts/alerts";
 
 const WalletButton = () => {
@@ -78,8 +78,8 @@ type LayoutProps = {
 };
 
 export const Layout = ({ children }: LayoutProps) => {
-  const { releaseDate } = config;
   const [launched, setLaunched] = useState(false);
+  const showLinks = launched && !onlyHome;
 
   useEffect(() => {
     const run = () => {
@@ -109,7 +109,7 @@ export const Layout = ({ children }: LayoutProps) => {
           </div>
           <div class="hidden px-2 mx-2 navbar-center sm:flex">
             <div class="flex items-stretch">
-              {launched && (
+              {showLinks && (
                 <>
                   <Link className="btn btn-ghost rounded-btn" to="/">
                     Yield
@@ -131,7 +131,7 @@ export const Layout = ({ children }: LayoutProps) => {
               </a>
             </div>
           </div>
-          {launched && (
+          {showLinks && (
             <div class="navbar-end">
               <WalletButton />
             </div>
@@ -153,7 +153,7 @@ export const Layout = ({ children }: LayoutProps) => {
       <div class="drawer-side">
         <label for="navbar-drawer" class="drawer-overlay" />
         <ul class="p-4 overflow-y-auto menu w-80 bg-base-100">
-          {launched && (
+          {showLinks && (
             <>
               <li>
                 <Link to="/">Yield</Link>

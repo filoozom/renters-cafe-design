@@ -6,7 +6,7 @@ import classnames from "classnames";
 import { useCountdown } from "../hooks/useCountdown";
 
 // Config
-import config from "../../config/default";
+import { releaseDate } from "../../config/default";
 
 const ConnectWallet = () => {
   const [open, setOpen] = useState(false);
@@ -38,7 +38,7 @@ const ConnectWallet = () => {
 };
 
 const Hero = () => {
-  const countdown = useCountdown(config.releaseDate);
+  const countdown = useCountdown(releaseDate);
 
   return (
     <div class="hero p-32 bg-gradient-to-br from-primary to-accent h-full">

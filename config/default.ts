@@ -23,5 +23,8 @@ export default {
       "Joe LP Token": "Trader Joe",
     },
   },
-  releaseDate: new Date("2021-11-29 11:55:00"),
+  subgraph: "http://srv02.apyos.com:8000/subgraphs/name/renter-cafe/cafe",
 };
+
+export const onlyHome = false;
+export const releaseDate = new Date("2021-12-12 17:00:00 GMT+0100");
