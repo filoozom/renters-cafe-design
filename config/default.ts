@@ -23,4 +23,5 @@ export default {
       "Joe LP Token": "Trader Joe",
     },
   },
+  releaseDate: new Date("2021-11-29 11:55:00"),
 };

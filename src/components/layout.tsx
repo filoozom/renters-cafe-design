@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { ethers } from "ethers";
 import { Link } from "@reach/router";
 import classnames from "classnames";
+import { differenceInMilliseconds } from "date-fns";
 
 import type { ComponentChildren } from "preact";
 
@@ -11,6 +12,9 @@ import { DiscordIcon } from "./icons/discord";
 import { Logo } from "./logo";
 
 import { useStore } from "../store";
+
+// Config
+import config from "../../config/default";
 
 const WalletButton = () => {
   const { ethereum } = window;
@@ -72,72 +76,102 @@ type LayoutProps = {
   children: ComponentChildren;
 };
 
-export const Layout = ({ children }: LayoutProps) => (
-  <div class="drawer min-h-screen">
-    <input id="navbar-drawer" type="checkbox" class="drawer-toggle" />
-    <div class="flex flex-col drawer-content h-full">
-      <div class="w-full navbar bg-base-200 shadow-lg flex-initial">
-        <div class="flex-none sm:hidden">
-          <label for="navbar-drawer" class="btn btn-square btn-ghost">
-            <DrawerIcon />
-          </label>
+export const Layout = ({ children }: LayoutProps) => {
+  const { releaseDate } = config;
+  const [launched, setLaunched] = useState(false);
+
+  useEffect(() => {
+    const run = () => {
+      const difference = differenceInMilliseconds(releaseDate, new Date());
+      console.log({ difference });
+      if (difference < 0) {
+        setLaunched(true);
+      } else {
+        setTimeout(run, difference);
+      }
+    };
+    run();
+  }, [releaseDate]);
+
+  console.log({ launched });
+
+  return (
+    <div class="drawer min-h-screen">
+      <input id="navbar-drawer" type="checkbox" class="drawer-toggle" />
+      <div class="flex flex-col drawer-content h-full">
+        <div class="w-full navbar bg-base-200 shadow-lg flex-initial">
+          <div class="flex-none sm:hidden">
+            <label for="navbar-drawer" class="btn btn-square btn-ghost">
+              <DrawerIcon />
+            </label>
+          </div>
+          <div class="navbar-start sm:ml-2">
+            <Logo />
+            <span class="ml-2 sm:block hidden">Renter.Cafe</span>
+          </div>
+          <div class="hidden px-2 mx-2 navbar-center sm:flex">
+            <div class="flex items-stretch">
+              {launched && (
+                <>
+                  <Link className="btn btn-ghost rounded-btn" to="/">
+                    Yield
+                  </Link>
+                  <Link className="btn btn-ghost rounded-btn" to="/auctions">
+                    Auctions
+                  </Link>
+                  <Link className="btn btn-ghost rounded-btn" to="/stealing">
+                    Stealing
+                  </Link>
+                </>
+              )}
+              <a
+                className="btn btn-ghost rounded-btn"
+                href="https://docs.renter.cafe/"
+              >
+                Docs
+              </a>
+            </div>
+          </div>
+          {launched && (
+            <div class="navbar-end">
+              <WalletButton />
+            </div>
+          )}
         </div>
-        <div class="navbar-start sm:ml-2">
-          <Logo />
-          <span class="ml-2 sm:block hidden">Renter.Cafe</span>
-        </div>
-        <div class="hidden px-2 mx-2 navbar-center sm:flex">
-          <div class="flex items-stretch">
-            <Link className="btn btn-ghost rounded-btn" to="/">
-              Yield
-            </Link>
-            <Link className="btn btn-ghost rounded-btn" to="/auctions">
-              Auctions
-            </Link>
-            <Link className="btn btn-ghost rounded-btn" to="/stealing">
-              Stealing
-            </Link>
-            <a
-              className="btn btn-ghost rounded-btn"
-              href="https://docs.renter.cafe/"
-            >
-              Docs
+        <div class="flex-auto">{children}</div>
+        <footer class="flex items-center p-4 bg-neutral text-neutral-content justify-between flex-initial">
+          <p>No rights reserved :-)</p>
+          <div class="flex gap-4">
+            <a target="_blank" href="https://twitter.com/rentercafe">
+              <TwitterIcon />
+            </a>
+            <a target="_blank" href="https://discord.gg/8C52Auxz">
+              <DiscordIcon />
             </a>
           </div>
-        </div>
-        <div class="navbar-end">
-          <WalletButton />
-        </div>
+        </footer>
       </div>
-      <div class="flex-auto">{children}</div>
-      <footer class="flex items-center p-4 bg-neutral text-neutral-content justify-between flex-initial">
-        <p>No rights reserved :-)</p>
-        <div class="flex gap-4">
-          <a target="_blank" href="https://twitter.com/rentercafe">
-            <TwitterIcon />
-          </a>
-          <a target="_blank" href="https://discord.gg/8C52Auxz">
-            <DiscordIcon />
-          </a>
-        </div>
-      </footer>
+      <div class="drawer-side">
+        <label for="navbar-drawer" class="drawer-overlay" />
+        <ul class="p-4 overflow-y-auto menu w-80 bg-base-100">
+          {launched && (
+            <>
+              <li>
+                <Link to="/">Yield</Link>
+              </li>
+              <li>
+                <Link to="/auctions">Auctions</Link>
+              </li>
+              <li>
+                <Link to="/stealing">Stealing</Link>
+              </li>
+            </>
+          )}
+          <li>
+            <a href="https://docs.renter.cafe/">Docs</a>
+          </li>
+        </ul>
+      </div>
     </div>
-    <div class="drawer-side">
-      <label for="navbar-drawer" class="drawer-overlay" />
-      <ul class="p-4 overflow-y-auto menu w-80 bg-base-100">
-        <li>
-          <Link to="/">Yield</Link>
-        </li>
-        <li>
-          <Link to="/auctions">Auctions</Link>
-        </li>
-        <li>
-          <Link to="/stealing">Stealing</Link>
-        </li>
-        <li>
-          <a href="https://docs.renter.cafe/">Docs</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-);
+  );
+};
