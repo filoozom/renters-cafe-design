@@ -141,10 +141,10 @@ export const AuctionProperty = ({
       // Buy
       await contract.buy(auction.id, price);
     } catch (err) {
-      addAlert({
-        type: AlertType.ERROR,
-        message: (err as any).data.message as string,
-      });
+      const message = (err as any)?.data?.message as string;
+      if (message) {
+        addAlert({ type: AlertType.ERROR, message });
+      }
     } finally {
       setLoading(false);
     }
