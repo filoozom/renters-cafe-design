@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "preact/hooks";
+import { useContext, useEffect, useMemo, useState } from "preact/hooks";
 import classNames from "classnames";
 import { differenceInMilliseconds, intervalToDuration } from "date-fns";
 import { constants } from "ethers";
@@ -10,6 +10,9 @@ import config from "../../../config/default";
 import { ERC20 } from "../../lib/contracts/erc20";
 import { toBigInt } from "../../lib/ethereum";
 import { round } from "../../lib/tools";
+
+// Components
+import { AlertsContext, AlertType } from "../alerts/alerts";
 
 // Types
 import type {
@@ -87,6 +90,9 @@ export const AuctionProperty = ({
     [auction.startTimestamp]
   );
 
+  // Alerts
+  const { addAlert } = useContext(AlertsContext);
+
   useEffect(() => {
     const difference = differenceInMilliseconds(startDate, new Date());
     setIsLocked(difference > 0);
@@ -134,6 +140,11 @@ export const AuctionProperty = ({
 
       // Buy
       await contract.buy(auction.id, price);
+    } catch (err) {
+      addAlert({
+        type: AlertType.ERROR,
+        message: (err as any).data.message as string,
+      });
     } finally {
       setLoading(false);
     }

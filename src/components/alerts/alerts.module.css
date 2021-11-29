@@ -1,4 +1,4 @@
-.error {
+:global(.alert).error {
   background-color: #ffa38f;
   color: #740101;
 }
