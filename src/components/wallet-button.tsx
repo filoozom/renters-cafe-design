@@ -50,7 +50,7 @@ export const WalletButton = ({
     <button
       class={classNames(
         className,
-        "btn",
+        "btn btn-pulse",
         loading && "loading btn-disabled",
         disabled && "btn-disabled"
       )}
