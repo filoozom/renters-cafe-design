@@ -14,7 +14,7 @@ import { Logo } from "./logo";
 import { useStore } from "../store";
 
 // Config
-import { onlyHome, releaseDate } from "../../config/default";
+import { onlyHome, releaseDate, simulateLaunched } from "../../config/default";
 import { Alerts } from "./alerts/alerts";
 
 const WalletButton = () => {
@@ -79,7 +79,7 @@ type LayoutProps = {
 
 export const Layout = ({ children }: LayoutProps) => {
   const [launched, setLaunched] = useState(false);
-  const showLinks = launched && !onlyHome;
+  const showLinks = simulateLaunched || (launched && !onlyHome);
 
   useEffect(() => {
     const run = () => {
