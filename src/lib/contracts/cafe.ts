@@ -4,9 +4,11 @@ import abi from "../../data/abis/cafe.json";
 import config from "../../../config/default";
 import { getSigner } from "../ethereum";
 
+const { address } = config.cafe;
+
 export const Cafe = async () => {
   const signer = getSigner();
-  const contract = new Contract(config.cafe.address, abi, signer);
+  const contract = new Contract(address, abi, signer);
 
   const deposit = async (poolId: bigint, amount: bigint) => {
     await contract.deposit(poolId, amount);
@@ -21,6 +23,7 @@ export const Cafe = async () => {
   };
 
   return {
+    address,
     contract,
     deposit,
     withdraw,

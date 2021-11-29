@@ -4,35 +4,19 @@ import { differenceInMilliseconds, intervalToDuration } from "date-fns";
 import { constants } from "ethers";
 
 // Config
-import config from "../../config/default";
+import config from "../../../config/default";
 
 // Lib
-import { ERC20 } from "../lib/contracts/erc20";
-import { toBigInt } from "../lib/ethereum";
-import { round } from "../lib/tools";
+import { ERC20 } from "../../lib/contracts/erc20";
+import { toBigInt } from "../../lib/ethereum";
+import { round } from "../../lib/tools";
 
 // Types
-type Pool = {
-  id: bigint;
-};
-
-type Property = {
-  id: bigint;
-  name: string;
-  cap: bigint;
-  minted: bigint;
-  pools: Pool[];
-  multiplier: bigint;
-  bonus: bigint;
-  protection: bigint;
-  startRatio: bigint;
-  endRatio: bigint;
-  duration: bigint;
-  keepRatio: bigint;
-  factory: {
-    uri: string;
-  };
-};
+import type {
+  AuctionContract,
+  StealableProperty,
+  PropertyAuction,
+} from "./types";
 
 const currentPrice = (auction: PropertyAuction) => {
   const now = BigInt(Math.round(Date.now() / 1000));
@@ -53,7 +37,7 @@ const currentPrice = (auction: PropertyAuction) => {
   return auction.startPrice + currentPriceChange;
 };
 
-const getPropertyMetadata = async (property: Property) => {
+const getPropertyMetadata = async (property: StealableProperty) => {
   const response = await fetch(
     property.factory.uri.replace(
       "{id}",
@@ -78,25 +62,13 @@ const formatProtection = (protection: number) => {
     .join(":");
 };
 
-const Hero = () => (
-  <div class="hero p-32 bg-gradient-to-br from-primary to-accent">
-    <div class="text-center hero-content text-accent-content">
-      <div class="max-w-lg">
-        <h1 class="mb-8 text-5xl font-bold">
-          Create, sell and collect digital items
-        </h1>
-        <p class="mb-8">
-          Unit of data stored on a digital ledger, called a blockchain, that
-          certifies a digital asset to be unique and therefore not
-          interchangeable
-        </p>
-        <button class="btn btn-primary">Get Started</button>
-      </div>
-    </div>
-  </div>
-);
-
-const PropertyCard = ({ auction }: { auction: PropertyAuction }) => {
+export const AuctionProperty = ({
+  auction,
+  contract,
+}: {
+  auction: PropertyAuction;
+  contract: AuctionContract;
+}) => {
   // TODO: Add support for multiple properties in the same auction
   const { property } = auction.content[0];
 
@@ -150,19 +122,16 @@ const PropertyCard = ({ auction }: { auction: PropertyAuction }) => {
     try {
       // Check allowance
       const token = await ERC20(config.rent.address);
-      if (
-        !(await token.checkAllowance(config.propertyAuction.address, price))
-      ) {
+      if (!(await token.checkAllowance(contract.address, price))) {
         const tx = await token.approve(
-          config.propertyAuction.address,
+          contract.address,
           toBigInt(constants.MaxUint256)
         );
         await tx.wait();
       }
 
       // Buy
-      const propertyAuction = await PropertyAuction();
-      await propertyAuction.buy(auction.id, price);
+      await contract.buy(auction.id, price);
     } finally {
       setLoading(false);
     }
