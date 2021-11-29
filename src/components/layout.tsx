@@ -125,6 +125,7 @@ export const Layout = ({ children }: LayoutProps) => {
               <a
                 className="btn btn-ghost rounded-btn"
                 href="https://docs.renter.cafe/"
+                target="_blank"
               >
                 Docs
               </a>
@@ -166,7 +167,9 @@ export const Layout = ({ children }: LayoutProps) => {
             </>
           )}
           <li>
-            <a href="https://docs.renter.cafe/">Docs</a>
+            <a href="https://docs.renter.cafe/" target="_blank">
+              Docs
+            </a>
           </li>
         </ul>
       </div>
