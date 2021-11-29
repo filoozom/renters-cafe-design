@@ -1,5 +1,4 @@
 import { useContext, useEffect, useMemo, useState } from "preact/hooks";
-import classNames from "classnames";
 import { differenceInMilliseconds, intervalToDuration } from "date-fns";
 import { constants } from "ethers";
 
@@ -13,6 +12,7 @@ import { round } from "../../lib/tools";
 
 // Components
 import { AlertsContext, AlertType } from "../alerts/alerts";
+import { WalletButton } from "../wallet-button";
 
 // Types
 import type {
@@ -80,8 +80,8 @@ export const AuctionProperty = ({
   // State
   const [loading, setLoading] = useState(false);
   const [metadata, setMetadata] = useState<{ name: string; image: string }>();
-  const [isLocked, setIsLocked] = useState<boolean>();
-  const [price, setPrice] = useState<bigint>(0n);
+  const [isLocked, setIsLocked] = useState(false);
+  const [price, setPrice] = useState(0n);
   const [countdown, setCountdown] =
     useState<ReturnType<typeof intervalToDuration>>();
 
@@ -203,19 +203,13 @@ export const AuctionProperty = ({
         ) : (
           <p>This property is compatible with every pool</p>
         )}
-        <button
-          class={classNames(
-            "btn",
-            "btn-secondary",
-            "mt-4",
-            "w-full",
-            "box-border",
-            isLocked && "btn-disabled"
-          )}
+        <WalletButton
+          class="btn-secondary mt-4 w-full box-border"
+          disabled={isLocked}
           onClick={buy}
         >
           {buttonAction} for {round(Number(price) / 1e18)} RENT
-        </button>
+        </WalletButton>
       </div>
     </div>
   );

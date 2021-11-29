@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from "preact/hooks";
 import classnames from "classnames";
 import type { RouteComponentProps } from "@reach/router";
 import { useQuery } from "urql";
-import { constants, providers } from "ethers";
+import { constants } from "ethers";
 
 import classes from "./farm.module.css";
 
@@ -19,6 +19,7 @@ import config from "../../../config/default";
 import { toBigInt, getProvider } from "../../lib/ethereum";
 import { GiftIcon } from "../../components/icons/gift";
 import { round } from "../../lib/tools";
+import { WalletButton } from "../../components/wallet-button";
 
 const getMultiplier = (cafe: Cafe, from: bigint, to: bigint) => {
   if (to <= cafe.bonusEndTimestamp) {
@@ -158,41 +159,28 @@ const PoolSettings = ({
   };
 
   const doAction = async () => {
-    if (loading) {
-      return;
-    }
-
     const amount = BigInt(input || "0");
     const cafe = await Cafe();
 
-    setLoading(true);
-    try {
-      if (!address) {
-        const { ethereum } = window;
-        const provider = new providers.Web3Provider(ethereum);
-        await provider.send("eth_requestAccounts", []);
-      } else if (action === "deposit") {
-        // Check allowance
-        const token = await ERC20(pool.token);
-        if (!(await token.checkAllowance(config.cafe.address, amount))) {
-          const tx = await token.approve(
-            config.cafe.address,
-            toBigInt(constants.MaxUint256)
-          );
-          await tx.wait();
-        }
-
-        // Initiate deposit
-        await cafe.deposit(pool.id, amount);
-      } else if (action === "withdraw") {
-        await cafe.withdraw(pool.id, amount);
+    if (action === "deposit") {
+      // Check allowance
+      const token = await ERC20(pool.token);
+      if (!(await token.checkAllowance(config.cafe.address, amount))) {
+        const tx = await token.approve(
+          config.cafe.address,
+          toBigInt(constants.MaxUint256)
+        );
+        await tx.wait();
       }
 
-      setInput("0");
-      refetch();
-    } finally {
-      setLoading(false);
+      // Initiate deposit
+      await cafe.deposit(pool.id, amount);
+    } else if (action === "withdraw") {
+      await cafe.withdraw(pool.id, amount);
     }
+
+    setInput("0");
+    refetch();
   };
 
   return (
@@ -240,14 +228,9 @@ const PoolSettings = ({
           />
           <span class="whitespace-nowrap">{getPoolName(pool)}</span>
         </label>
-        <button
-          class={`btn btn-primary w-full ${
-            loading ? "btn-disabled loading" : ""
-          }`}
-          onClick={doAction}
-        >
-          {address ? action : "Connect wallet"}
-        </button>
+        <WalletButton class="btn-primary w-full" onClick={doAction}>
+          {action}
+        </WalletButton>
       </td>
     </tr>
   );
