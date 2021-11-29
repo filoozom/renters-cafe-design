@@ -129,7 +129,6 @@ const PoolSettings = ({
   const [action, setAction] = useState<ActionType>("deposit");
   const buttonClasses = ["btn", "btn-outline", "btn-sm"];
   const percentages = [25, 50, 75, 100];
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!address) {
@@ -313,17 +312,24 @@ const PoolTr = ({
         <td class="p-3">123.45%</td>
         {showPendingRent && <td class="p-3">{pending} RENT</td>}
         <td class="p-3 whitespace-nowrap">
-          {showPendingRent && (
-            <div class="btn btn-square btn-ghost">
-              <div
-                data-tip="Harvest"
-                class="tooltip tooltip-top"
-                onClick={harvest}
-              >
-                <GiftIcon />
-              </div>
+          <div
+            class={classnames(
+              "btn btn-square btn-ghost",
+              !showPendingRent && classes.disabled
+            )}
+          >
+            <div
+              data-tip={
+                showPendingRent
+                  ? "Harvest"
+                  : "Connect your wallet to unlock harvesting"
+              }
+              class="tooltip tooltip-top"
+              onClick={harvest}
+            >
+              <GiftIcon />
             </div>
-          )}
+          </div>
           <div class="btn btn-square btn-ghost" onClick={onSettings}>
             <div data-tip="Deposit / withdraw" class="tooltip tooltip-top">
               <CogIcon />
