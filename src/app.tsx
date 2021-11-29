@@ -15,7 +15,7 @@ import { StealingPage } from "./pages/stealing";
 export const App = () => (
   <Provider value={client}>
     <Layout>
-      <Router primary={false}>
+      <Router primary={false} style={{ height: "100%" }}>
         <FarmPage path="/" />
         <AuctionsPage path="/auctions" />
         <StealingPage path="/stealing" />

@@ -75,8 +75,8 @@ type LayoutProps = {
 export const Layout = ({ children }: LayoutProps) => (
   <div class="drawer min-h-screen">
     <input id="navbar-drawer" type="checkbox" class="drawer-toggle" />
-    <div class="flex flex-col drawer-content">
-      <div class="w-full navbar bg-base-200 shadow-lg">
+    <div class="flex flex-col drawer-content h-full">
+      <div class="w-full navbar bg-base-200 shadow-lg flex-initial">
         <div class="flex-none sm:hidden">
           <label for="navbar-drawer" class="btn btn-square btn-ghost">
             <DrawerIcon />
@@ -109,8 +109,8 @@ export const Layout = ({ children }: LayoutProps) => (
           <WalletButton />
         </div>
       </div>
-      {children}
-      <footer class="flex items-center p-4 bg-neutral text-neutral-content justify-between">
+      <div class="flex-auto">{children}</div>
+      <footer class="flex items-center p-4 bg-neutral text-neutral-content justify-between flex-initial">
         <p>No rights reserved :-)</p>
         <div class="flex gap-4">
           <a target="_blank" href="https://twitter.com/rentercafe">
