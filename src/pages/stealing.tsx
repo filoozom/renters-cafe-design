@@ -14,6 +14,7 @@ import { Auctions } from "../components/auctions/auctions";
 const StealingQuery = `
   query ($stealableProperties: ID!) {
     stealablePropertiesFactory(id: $stealableProperties) {
+      id
       properties(where: {owners_not: []}) {
         id
         cap
@@ -29,6 +30,7 @@ const StealingQuery = `
         duration
         keepRatio            
         factory {
+          id
           uri
         }
         owners {

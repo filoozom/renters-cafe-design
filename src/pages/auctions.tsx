@@ -16,6 +16,7 @@ const AuctionsQuery = `
     propertyAuctionFactory(id: $propertyAuction,) {
       id
       cuts {
+        id
         user
         amount
       }
@@ -44,6 +45,7 @@ const AuctionsQuery = `
             duration
             keepRatio            
             factory {
+              id
               uri
             }
           }
