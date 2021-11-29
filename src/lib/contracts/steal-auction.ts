@@ -4,7 +4,7 @@ import abi from "../../data/abis/steal-auction.json";
 import config from "../../../config/default";
 import { getSigner } from "../ethereum";
 
-const { address } = config.propertyAuction;
+const { address } = config.stealAuction;
 
 export const StealAuction = async () => {
   const signer = getSigner();
