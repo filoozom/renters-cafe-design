@@ -18,7 +18,7 @@ import { ERC20 } from "../../lib/contracts/erc20";
 import config from "../../../config/default";
 import { toBigInt, getProvider } from "../../lib/ethereum";
 import { GiftIcon } from "../../components/icons/gift";
-import { round } from "../../lib/tools";
+import { formatNumber } from "../../lib/tools";
 import { WalletButton } from "../../components/wallet-button";
 
 const getMultiplier = (cafe: Cafe, from: bigint, to: bigint) => {
@@ -261,14 +261,15 @@ const PoolTr = ({
   const rentPerDay =
     ((Number(rentPerSecond) * 60 * 60 * 24) / rentPrecision) * bonus;
 
-  const [pending, setPending] = useState(0);
+  const [pending, setPending] = useState("0");
 
   useEffect(() => {
     if (!showPendingRent) {
       return;
     }
 
-    const run = () => setPending(round(Number(pendingRent(cafe, pool)) / 1e18));
+    const run = () =>
+      setPending(formatNumber(Number(pendingRent(cafe, pool)) / 1e18));
     const interval = setInterval(run, 1000);
     run();
 
@@ -308,7 +309,7 @@ const PoolTr = ({
           </div>
         </td>
         <td class="p-3">$123,456,789</td>
-        <td class="p-3">{round(rentPerDay)} RENT / day</td>
+        <td class="p-3">{formatNumber(rentPerDay)} RENT / day</td>
         <td class="p-3">123.45%</td>
         {showPendingRent && <td class="p-3">{pending} RENT</td>}
         <td class="p-3 whitespace-nowrap">

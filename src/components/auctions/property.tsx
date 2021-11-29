@@ -8,7 +8,7 @@ import config from "../../../config/default";
 // Lib
 import { ERC20 } from "../../lib/contracts/erc20";
 import { toBigInt } from "../../lib/ethereum";
-import { round } from "../../lib/tools";
+import { formatNumber } from "../../lib/tools";
 
 // Components
 import { AlertsContext, AlertType } from "../alerts/alerts";
@@ -208,7 +208,7 @@ export const AuctionProperty = ({
           disabled={isLocked}
           onClick={buy}
         >
-          {buttonAction} for {round(Number(price) / 1e18)} RENT
+          {buttonAction} for {formatNumber(Number(price) / 1e18)} RENT
         </WalletButton>
       </div>
     </div>
