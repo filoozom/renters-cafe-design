@@ -1,8 +1,18 @@
+import { useMemo, useState } from "preact/hooks";
+
 import { SadIcon } from "../icons/sad";
 
 import type { PropertyAuction, AuctionContract } from "./types";
 import { AuctionProperty } from "./property";
-import { AuctionMenu } from "./menu";
+import { AuctionMenu, Availability, BonusType } from "./menu";
+
+const hasMultiplier = (auction: PropertyAuction) => {
+  return auction.content.some((content) => content.property.multiplier > 0n);
+};
+
+const hasBonus = (auction: PropertyAuction) => {
+  return auction.content.some((content) => content.property.bonus > 0n);
+};
 
 export const Auctions = ({
   auctions,
@@ -13,14 +23,56 @@ export const Auctions = ({
   contract: AuctionContract;
   buttonAction: "buy" | "steal";
 }) => {
+  const [availability, setAvailability] = useState<Availability>(
+    Availability.ALL
+  );
+  const [bonusType, setBonusType] = useState<BonusType>(BonusType.ALL);
+
+  // TODO: Support multi-property auctions
+  // TODO: Update when startTimestamp matches in real time
+  const filtered = useMemo(
+    () =>
+      auctions.filter((auction) => {
+        if (availability !== Availability.ALL) {
+          const started = Number(auction.startTimestamp) <= Date.now() / 1000;
+          if (started && availability === Availability.LOCKED) {
+            return false;
+          }
+          if (!started && availability === Availability.AVAILABLE) {
+            return false;
+          }
+        }
+
+        if (bonusType !== BonusType.ALL) {
+          const ok =
+            bonusType === BonusType.BONUS
+              ? hasBonus(auction)
+              : hasMultiplier(auction);
+
+          if (!ok) {
+            return false;
+          }
+        }
+
+        return true;
+      }),
+    [auctions, availability, bonusType]
+  );
+
+  const hasFilter = auctions.length !== filtered.length;
+
   return (
     <div class="hero">
       <div class="max-w-5xl mx-auto text-center hero-content">
         <div class="mb-2">
-          <AuctionMenu />
-          {auctions.length ? (
+          <AuctionMenu
+            onAvailability={setAvailability}
+            onBonusType={setBonusType}
+            onSearch={() => {}}
+          />
+          {filtered.length ? (
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {auctions.map((auction) => (
+              {filtered.map((auction) => (
                 <AuctionProperty
                   auction={auction}
                   contract={contract}
@@ -34,8 +86,10 @@ export const Auctions = ({
                 <SadIcon />
               </div>
               <p>
-                There are currently no auctions going on, nor are there auctions
-                starting in the next 24 hours...
+                There are currently no auctions{" "}
+                {hasFilter && "matching those filters"} going on, nor are there
+                auctions {hasFilter && "matching those filters"} starting in the
+                next 24 hours...
               </p>
             </div>
           )}
