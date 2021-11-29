@@ -7,9 +7,11 @@ import { AuctionMenu } from "./menu";
 export const Auctions = ({
   auctions,
   contract,
+  buttonAction,
 }: {
   auctions: PropertyAuction[];
   contract: AuctionContract;
+  buttonAction: "buy" | "steal";
 }) => {
   return (
     <div class="hero">
@@ -19,7 +21,11 @@ export const Auctions = ({
           {auctions.length ? (
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
               {auctions.map((auction) => (
-                <AuctionProperty auction={auction} contract={contract} />
+                <AuctionProperty
+                  auction={auction}
+                  contract={contract}
+                  buttonAction={buttonAction}
+                />
               ))}
             </div>
           ) : (

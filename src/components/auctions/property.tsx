@@ -65,9 +65,11 @@ const formatProtection = (protection: number) => {
 export const AuctionProperty = ({
   auction,
   contract,
+  buttonAction,
 }: {
   auction: PropertyAuction;
   contract: AuctionContract;
+  buttonAction: "buy" | "steal";
 }) => {
   // TODO: Add support for multiple properties in the same auction
   const { property } = auction.content[0];
@@ -201,7 +203,7 @@ export const AuctionProperty = ({
           )}
           onClick={buy}
         >
-          Buy for {round(Number(price) / 1e18)} RENT
+          {buttonAction} for {round(Number(price) / 1e18)} RENT
         </button>
       </div>
     </div>

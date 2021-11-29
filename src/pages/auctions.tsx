@@ -113,7 +113,9 @@ const PropertyCards = () => {
   }
 
   const { propertyAuctionFactory: pa } = result.data;
-  return <Auctions auctions={pa.auctions} contract={contract} />;
+  return (
+    <Auctions auctions={pa.auctions} contract={contract} buttonAction="buy" />
+  );
 };
 
 type PropertiesPageProps = RouteComponentProps;

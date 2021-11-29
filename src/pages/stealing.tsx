@@ -120,7 +120,9 @@ const PropertyCards = () => {
     return <p>Loading...</p>;
   }
 
-  return <Auctions auctions={auctions} contract={contract} />;
+  return (
+    <Auctions auctions={auctions} contract={contract} buttonAction="steal" />
+  );
 };
 
 type StealingPageProps = RouteComponentProps;
