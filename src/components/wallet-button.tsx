@@ -10,6 +10,7 @@ type WalletButtonProps = {
   class: string;
   onClick: () => Promise<void>;
   disabled?: boolean;
+  pulse?: boolean;
 };
 
 export const WalletButton = ({
@@ -17,6 +18,7 @@ export const WalletButton = ({
   class: className,
   onClick,
   disabled = false,
+  pulse = false,
 }: WalletButtonProps) => {
   const [address] = useStore.address();
   const [loading, setLoading] = useState(false);
@@ -50,9 +52,10 @@ export const WalletButton = ({
     <button
       class={classNames(
         className,
-        "btn btn-pulse",
+        "btn",
         loading && "loading btn-disabled",
-        disabled && "btn-disabled"
+        disabled && "btn-disabled",
+        pulse && !loading && !disabled && "btn-pulse"
       )}
       onClick={doAction}
     >

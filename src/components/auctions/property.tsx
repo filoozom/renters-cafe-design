@@ -207,6 +207,7 @@ export const AuctionProperty = ({
           class="btn-secondary mt-4 w-full box-border"
           disabled={isLocked}
           onClick={buy}
+          pulse={true}
         >
           {buttonAction} for {formatNumber(Number(price) / 1e18)} RENT
         </WalletButton>
