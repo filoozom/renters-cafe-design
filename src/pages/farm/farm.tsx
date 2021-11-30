@@ -44,6 +44,12 @@ const pendingRent = (cafe: Cafe, pool: Pool) => {
 
   const to = BigInt(Date.now()) / 1000n;
   const multiplier = getMultiplier(cafe, pool.lastRewardTimestamp, to);
+
+  // NOTE: This happens when the Cafe hasn't started yet
+  if (multiplier < 0) {
+    return 0n;
+  }
+
   const reward =
     (multiplier * cafe.rentPerSecond * pool.allocation) / cafe.totalAllocation;
 
