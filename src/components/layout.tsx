@@ -9,6 +9,7 @@ import type { ComponentChildren } from "preact";
 import { DrawerIcon } from "./icons/drawer";
 import { TwitterIcon } from "./icons/twitter";
 import { DiscordIcon } from "./icons/discord";
+import { TelegramIcon } from "./icons/telegram";
 import { Logo } from "./logo";
 
 import { useStore } from "../store";
@@ -147,6 +148,9 @@ export const Layout = ({ children, onlyHome = false }: LayoutProps) => {
             </a>
             <a target="_blank" href="https://discord.gg/RPZNtweHEF">
               <DiscordIcon />
+            </a>
+            <a target="_blank" href="https://t.co/HDGcX3S9Ov">
+              <TelegramIcon />
             </a>
           </div>
         </footer>
