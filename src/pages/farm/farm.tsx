@@ -360,8 +360,6 @@ export const FarmPage = (_: FarmPageProps) => {
     setActive(active === id ? null : id);
   };
 
-  console.log(address);
-
   const [result, refresh] = useQuery<{ cafe: Cafe }>({
     query: FarmQuery,
     variables: {
