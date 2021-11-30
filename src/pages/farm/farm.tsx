@@ -100,7 +100,7 @@ const getPoolName = (pool: Pool) =>
   pool.lp.tokens.map(({ symbol }) => symbol).join("-");
 */
 
-const getPoolName = (pool: any) => pool.token.substr(2, 4);
+const getPoolName = (pool: Pool) => pool.lp.name;
 
 const Hero = () => (
   <div class="hero p-32 bg-gradient-to-br from-primary to-accent">

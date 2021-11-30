@@ -5,4 +5,6 @@ export type LP = {
     symbol: string;
   }[];
   balance: bigint;
+  name: string;
+  symbol: string;
 };
