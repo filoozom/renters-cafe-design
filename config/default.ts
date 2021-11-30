@@ -4,19 +4,19 @@ export default {
     ws: "ws://srv02.apyos.com:9661/ext/bc/C/ws",
   },
   cafe: {
-    address: "0x4535B97F1e7c176683E34dC6661e852bb5840CA9",
+    address: "0x11f6673e4E2e3b26a5C7C5D39F946741601Ea953",
   },
   propertyAuction: {
-    address: "0xC2c1C12f354CB5579414B9FBB48fa2993C157F63",
+    address: "0x8EB06749Dcb368A1B27D4769b46389B882c255b8",
   },
   stealableProperties: {
-    address: "0x41640A9fCc16245cc397555E04AbA2D312146f9F",
+    address: "0x1E240E4bD97f9F0bef8336aB42877eed6323CC7D",
   },
   stealAuction: {
-    address: "0x45b1d849FFE19CD99005DfAC4bB9993cDa8Af062",
+    address: "0xC3f3d7Ac58FF1843e97952A0c06ED0d63d65Ed74",
   },
   rent: {
-    address: "0xEe866d2cFCFED21902E3b871f4eD388E71970ddc",
+    address: "0xADc312C5715201E4A47BeB1EA78419B5e1c9C928",
   },
   lps: {
     nameToType: {
