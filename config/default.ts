@@ -4,26 +4,27 @@ export default {
     ws: "wss://rpc.renter-cafe.apyos.dev/ext/bc/C/ws",
   },
   cafe: {
-    address: "0x11f6673e4E2e3b26a5C7C5D39F946741601Ea953",
+    address: "0x1Eb835EB7BEEEE9E6bbFe08F16a2d2eF668204bd",
   },
   propertyAuction: {
-    address: "0x8EB06749Dcb368A1B27D4769b46389B882c255b8",
+    address: "0x993F00eb9C73e3E4eAe3d6Afb4Ba65A6b8B5E597",
   },
   stealableProperties: {
-    address: "0x1E240E4bD97f9F0bef8336aB42877eed6323CC7D",
+    address: "0x2706A171ECb68E0038378D40Dd1d136361d0cB7d",
   },
   stealAuction: {
-    address: "0xC3f3d7Ac58FF1843e97952A0c06ED0d63d65Ed74",
+    address: "0xd771D7C0e1EBE89C9E9F663824851BB89b926d1a",
   },
   rent: {
-    address: "0xADc312C5715201E4A47BeB1EA78419B5e1c9C928",
+    address: "0x0116686E2291dbd5e317F47faDBFb43B599786Ef",
   },
   lps: {
     nameToType: {
       "Joe LP Token": "Trader Joe",
     },
   },
-  subgraph: "http://srv02.apyos.com:8000/subgraphs/name/renter-cafe/cafe",
+  subgraph:
+    "https://graphs.renter-cafe.apyos.dev/subgraphs/name/renter-cafe/cafe",
 };
 
 export const simulateLaunched = true;
