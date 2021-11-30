@@ -8,7 +8,7 @@ import { Layout } from "./components/layout";
 import { HomePage } from "./pages/home";
 
 render(
-  <Layout>
+  <Layout onlyHome={true}>
     <HomePage />
   </Layout>,
   document.getElementById("app")!

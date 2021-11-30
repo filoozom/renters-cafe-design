@@ -41,7 +41,7 @@ const Hero = () => {
   const countdown = useCountdown(releaseDate);
 
   return (
-    <div class="hero p-32 bg-gradient-to-br from-primary to-accent h-full">
+    <div class="hero bg-gradient-to-br from-primary to-accent h-full">
       <div class="text-center hero-content text-accent-content">
         <div class="max-w-lg">
           <h1 class="mb-8 text-5xl font-bold">Welcome to Renters.cafe</h1>

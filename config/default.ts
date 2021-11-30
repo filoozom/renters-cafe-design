@@ -27,5 +27,4 @@ export default {
 };
 
 export const simulateLaunched = true;
-export const onlyHome = false;
 export const releaseDate = new Date("2021-12-12 17:00:00 GMT+0100");
