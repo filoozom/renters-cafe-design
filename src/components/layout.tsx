@@ -139,7 +139,7 @@ export const Layout = ({ children, onlyHome = false }: LayoutProps) => {
           )}
         </div>
         <div class="flex-auto">{children}</div>
-        <footer class="flex items-center p-4 bg-neutral text-neutral-content justify-between flex-initial">
+        <footer class="flex items-center p-4 bg-neutral text-neutral-content justify-between flex-initial flex-col sm:flex-row">
           <p>No rights reserved :-)</p>
           <div class="flex gap-4">
             <a target="_blank" href="https://twitter.com/rentercafe">
