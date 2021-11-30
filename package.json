@@ -3,9 +3,11 @@
   "name": "design",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
-    "build": "node create-index.js main && npm run vite:build",
-    "build:only-home": "node create-index.js home && npm run vite:build",
+    "dev": "npm run prepare:main && vite",
+    "build": "npm run prepare:main && npm run vite:build",
+    "build:only-home": "npm run prepare:home && npm run vite:build",
+    "prepare:home": "node create-index.js home",
+    "prepare:main": "node create-index.js main",
     "vite:build": "tsc && vite build",
     "serve": "vite preview"
   },
