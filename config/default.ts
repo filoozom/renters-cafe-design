@@ -1,7 +1,7 @@
 export default {
   rpc: {
-    http: "http://srv02.apyos.com:9661/ext/bc/C/rpc",
-    ws: "ws://srv02.apyos.com:9661/ext/bc/C/ws",
+    http: "https://rpc.renter-cafe.apyos.dev/ext/bc/C/rpc",
+    ws: "wss://rpc.renter-cafe.apyos.dev/ext/bc/C/ws",
   },
   cafe: {
     address: "0x11f6673e4E2e3b26a5C7C5D39F946741601Ea953",
