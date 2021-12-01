@@ -34,7 +34,7 @@ const StealingQuery = `
           id
           uri
         }
-        owners {
+        owners(orderBy: timestamp, orderDirection: asc) {
           id
           user
           protectedUntil
