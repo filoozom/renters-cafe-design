@@ -21,7 +21,7 @@ const AuctionsQuery = `
         user
         amount
       }
-      auctions(where: { done: false, startTimestamp_lt: $maxStartTimestamp }) {
+      auctions(where: { done: false, startTimestamp_lt: $maxStartTimestamp }, orderBy: startTimestamp, orderDirection: asc) {
         id
         startPrice
         endPrice
