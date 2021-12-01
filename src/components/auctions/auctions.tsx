@@ -7,11 +7,11 @@ import { AuctionProperty } from "./property";
 import { AuctionMenu, Availability, BonusType } from "./menu";
 
 const hasMultiplier = (auction: PropertyAuction) => {
-  return auction.content.some((content) => content.property.multiplier > 0n);
+  return auction.content.some((content) => content.property.multiplier.gt(0));
 };
 
 const hasBonus = (auction: PropertyAuction) => {
-  return auction.content.some((content) => content.property.bonus > 0n);
+  return auction.content.some((content) => content.property.bonus.gt(0));
 };
 
 export const Auctions = ({

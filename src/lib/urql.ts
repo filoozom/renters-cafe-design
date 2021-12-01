@@ -1,3 +1,4 @@
+import { BigNumber } from "@ethersproject/bignumber";
 import { Provider, createClient, dedupExchange, fetchExchange } from "urql";
 import {
   cacheExchange,
@@ -9,12 +10,12 @@ import {
 
 import config from "../../config/default";
 
-const toBigInt = (
+const toBigNumber = (
   parent: DataFields,
   _args: Variables,
   _cache: Cache,
   info: ResolveInfo
-): BigInt => BigInt(parent[info.fieldName] as string);
+) => BigNumber.from(parent[info.fieldName]);
 
 export const client = createClient({
   url: config.subgraph,
@@ -23,62 +24,63 @@ export const client = createClient({
     cacheExchange({
       resolvers: {
         Cafe: {
-          rentPerSecond: toBigInt,
-          totalAllocation: toBigInt,
-          withdrawFeePrecision: toBigInt,
-          accRentPrecision: toBigInt,
-          bonusEndTimestamp: toBigInt,
-          bonusMultiplier: toBigInt,
+          rentPerSecond: toBigNumber,
+          totalAllocation: toBigNumber,
+          withdrawFeePrecision: toBigNumber,
+          accRentPrecision: toBigNumber,
+          bonusEndTimestamp: toBigNumber,
+          bonusMultiplier: toBigNumber,
         },
         Pool: {
-          id: toBigInt,
-          allocation: toBigInt,
-          accRentPerShare: toBigInt,
-          lastRewardTimestamp: toBigInt,
-          balance: toBigInt,
-          total: toBigInt,
+          id: toBigNumber,
+          allocation: toBigNumber,
+          accRentPerShare: toBigNumber,
+          lastRewardTimestamp: toBigNumber,
+          balance: toBigNumber,
+          total: toBigNumber,
         },
         User: {
-          balance: toBigInt,
-          debt: toBigInt,
-          rentHarvested: toBigInt,
-          total: toBigInt,
+          balance: toBigNumber,
+          debt: toBigNumber,
+          rentHarvested: toBigNumber,
+          total: toBigNumber,
         },
         PropertyAuction: {
-          id: toBigInt,
-          startPrice: toBigInt,
-          endPrice: toBigInt,
-          startTimestamp: toBigInt,
-          duration: toBigInt,
+          id: toBigNumber,
+          startPrice: toBigNumber,
+          endPrice: toBigNumber,
+          startTimestamp: toBigNumber,
+          duration: toBigNumber,
         },
         PropertyAuctionContent: {
-          count: toBigInt,
-          weight: toBigInt,
+          count: toBigNumber,
+          weight: toBigNumber,
         },
         PropertyAuctionCut: {
-          amount: toBigInt,
+          amount: toBigNumber,
         },
         StealablePropertiesFactory: {
-          multiplierPrecision: toBigInt,
+          multiplierPrecision: toBigNumber,
         },
         StealableProperty: {
-          cap: toBigInt,
-          minted: toBigInt,
-          multiplier: toBigInt,
-          bonus: toBigInt,
-          protection: toBigInt,
-          startRatio: toBigInt,
-          endRatio: toBigInt,
-          duration: toBigInt,
-          keepRatio: toBigInt,
-          stealMints: toBigInt,
-          stealMintsDone: toBigInt,
-          timeStolen: toBigInt,
+          id: toBigNumber,
+          cap: toBigNumber,
+          minted: toBigNumber,
+          multiplier: toBigNumber,
+          bonus: toBigNumber,
+          protection: toBigNumber,
+          startRatio: toBigNumber,
+          endRatio: toBigNumber,
+          duration: toBigNumber,
+          keepRatio: toBigNumber,
+          stealMints: toBigNumber,
+          stealMintsDone: toBigNumber,
+          timeStolen: toBigNumber,
         },
         StealablePropertyOwner: {
-          since: toBigInt,
-          price: toBigInt,
-          protectedUntil: toBigInt,
+          since: toBigNumber,
+          price: toBigNumber,
+          protectedUntil: toBigNumber,
         },
       },
     }),

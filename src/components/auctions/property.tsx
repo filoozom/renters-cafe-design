@@ -1,13 +1,13 @@
 import { useContext, useEffect, useMemo, useState } from "preact/hooks";
 import { differenceInMilliseconds, intervalToDuration } from "date-fns";
-import { MaxUint256 } from "@ethersproject/constants";
+import { MaxUint256, Zero } from "@ethersproject/constants";
+import { BigNumber } from "@ethersproject/bignumber";
 
 // Config
 import config from "../../../config/default";
 
 // Lib
 import { ERC20 } from "../../lib/contracts/erc20";
-import { toBigInt } from "../../lib/ethereum";
 import { formatNumber } from "../../lib/tools";
 
 // Components
@@ -22,29 +22,30 @@ import type {
 } from "./types";
 
 const currentPrice = (auction: PropertyAuction) => {
-  const now = BigInt(Math.round(Date.now() / 1000));
-  const secondsElapsed = now - auction.startTimestamp;
+  const now = BigNumber.from(Math.round(Date.now() / 1000));
+  const secondsElapsed = now.sub(auction.startTimestamp);
 
-  if (secondsElapsed > auction.duration) {
+  if (secondsElapsed.gt(auction.duration)) {
     return auction.endPrice;
   }
 
-  if (secondsElapsed < 0) {
+  if (secondsElapsed.lt(0)) {
     return auction.startPrice;
   }
 
-  const totalPriceChange = auction.endPrice - auction.startPrice;
-  const currentPriceChange =
-    (totalPriceChange * secondsElapsed) / auction.duration;
+  const totalPriceChange = auction.endPrice.sub(auction.startPrice);
+  const currentPriceChange = totalPriceChange
+    .mul(secondsElapsed)
+    .div(auction.duration);
 
-  return auction.startPrice + currentPriceChange;
+  return auction.startPrice.add(currentPriceChange);
 };
 
 const getPropertyMetadata = async (property: StealableProperty) => {
   const response = await fetch(
     property.factory.uri.replace(
       "{id}",
-      BigInt(property.id).toString(16).padStart(64, "0")
+      property.id.toHexString().substr(2).padStart(64, "0")
     )
   );
   const { name, image } = await response.json();
@@ -81,7 +82,7 @@ export const AuctionProperty = ({
   const [loading, setLoading] = useState(false);
   const [metadata, setMetadata] = useState<{ name: string; image: string }>();
   const [isLocked, setIsLocked] = useState(false);
-  const [price, setPrice] = useState(0n);
+  const [price, setPrice] = useState(Zero);
   const [countdown, setCountdown] =
     useState<ReturnType<typeof intervalToDuration>>();
 
@@ -131,7 +132,7 @@ export const AuctionProperty = ({
       // Check allowance
       const token = await ERC20(config.rent.address);
       if (!(await token.checkAllowance(contract.address, price))) {
-        const tx = await token.approve(contract.address, toBigInt(MaxUint256));
+        const tx = await token.approve(contract.address, MaxUint256);
         await tx.wait();
       }
 
@@ -183,7 +184,7 @@ export const AuctionProperty = ({
         </div>
         <div class="flex justify-between">
           <span>Bonus</span>
-          <span>{property.bonus}</span>
+          <span>{property.bonus.toString()}</span>
         </div>
         <div class="flex justify-between">
           <span>Protection</span>

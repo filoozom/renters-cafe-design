@@ -3,36 +3,47 @@ import { useState, useEffect, useMemo } from "preact/hooks";
 import classnames from "classnames";
 import type { RouteComponentProps } from "@reach/router";
 import { useQuery } from "urql";
-import { MaxUint256 } from "@ethersproject/constants";
+import { MaxUint256, NegativeOne, Zero } from "@ethersproject/constants";
+import { BigNumber } from "@ethersproject/bignumber";
 
 import classes from "./farm.module.css";
 
 import type { Pool } from "../../types/pool";
 import { CogIcon } from "../../components/icons/cog";
-import { Cafe } from "../../lib/contracts/cafe";
+import { Cafe as CafeContract } from "../../lib/contracts/cafe";
 import { LP } from "../../lib/contracts/lp";
 
 import { useStore } from "../../store";
 import { ERC20 } from "../../lib/contracts/erc20";
 
 import config from "../../../config/default";
-import { toBigInt, getProvider } from "../../lib/ethereum";
+import { getProvider } from "../../lib/ethereum";
 import { GiftIcon } from "../../components/icons/gift";
 import { formatNumber } from "../../lib/tools";
 import { WalletButton } from "../../components/wallet-button";
 
-const getMultiplier = (cafe: Cafe, from: bigint, to: bigint) => {
-  if (to <= cafe.bonusEndTimestamp) {
-    return (to - from) * cafe.bonusMultiplier;
-  } else if (from >= cafe.bonusEndTimestamp) {
-    return to - from;
+type Cafe = {
+  rentPerSecond: BigNumber;
+  totalAllocation: BigNumber;
+  withdrawFeePrecision: BigNumber;
+  accRentPrecision: BigNumber;
+  bonusEndTimestamp: BigNumber;
+  bonusMultiplier: BigNumber;
+  pools: [Pool];
+};
+
+const getMultiplier = (cafe: Cafe, from: BigNumber, to: BigNumber) => {
+  if (to.lte(cafe.bonusEndTimestamp)) {
+    return to.sub(from).mul(cafe.bonusMultiplier);
+  } else if (from.gte(cafe.bonusEndTimestamp)) {
+    return to.sub(from);
   }
 
-  return (
-    (cafe.bonusEndTimestamp - from) * cafe.bonusMultiplier +
-    to -
-    cafe.bonusEndTimestamp
-  );
+  return cafe.bonusEndTimestamp
+    .sub(from)
+    .mul(cafe.bonusMultiplier)
+    .add(to)
+    .sub(cafe.bonusEndTimestamp);
 };
 
 const pendingRent = (cafe: Cafe, pool: Pool) => {
@@ -40,24 +51,27 @@ const pendingRent = (cafe: Cafe, pool: Pool) => {
     return 0n;
   }
 
-  let accRentPerShare = pool.accRentPerShare;
-
-  const to = BigInt(Date.now()) / 1000n;
+  const to = BigNumber.from(Date.now()).div(1000);
   const multiplier = getMultiplier(cafe, pool.lastRewardTimestamp, to);
 
   // NOTE: This happens when the Cafe hasn't started yet
-  if (multiplier < 0) {
-    return 0n;
+  if (multiplier.lt(Zero)) {
+    return Zero;
   }
 
-  const reward =
-    (multiplier * cafe.rentPerSecond * pool.allocation) / cafe.totalAllocation;
+  const reward = multiplier
+    .mul(cafe.rentPerSecond)
+    .mul(pool.allocation)
+    .div(cafe.totalAllocation);
 
-  accRentPerShare += (reward * cafe.accRentPrecision) / pool.total;
-
-  return (
-    (pool.user.total * accRentPerShare) / cafe.accRentPrecision - pool.user.debt
+  const accRentPerShare = pool.accRentPerShare.add(
+    reward.mul(cafe.accRentPrecision).div(pool.total)
   );
+
+  return pool.user.total
+    .mul(accRentPerShare)
+    .div(cafe.accRentPrecision)
+    .sub(pool.user.debt);
 };
 
 const FarmQuery = `
@@ -130,7 +144,7 @@ const PoolSettings = ({
   refetch: () => void;
 }) => {
   const [address] = useStore.address();
-  const [balance, setBalance] = useState<bigint>(0n);
+  const [balance, setBalance] = useState(Zero);
   const [input, setInput] = useState<string>();
   const [action, setAction] = useState<ActionType>("deposit");
   const buttonClasses = ["btn", "btn-outline", "btn-sm"];
@@ -148,8 +162,8 @@ const PoolSettings = ({
   }, [pool.token, address]);
 
   const choosePercentage = (percentage: number) => {
-    const amount = action === "deposit" ? balance : pool?.user?.balance || 0n;
-    setInput(((amount * BigInt(percentage)) / 100n).toString());
+    const amount = action === "deposit" ? balance : pool?.user?.balance || Zero;
+    setInput(amount.mul(percentage).div(100).toString());
   };
 
   const changeInput = ({
@@ -164,17 +178,14 @@ const PoolSettings = ({
   };
 
   const doAction = async () => {
-    const amount = BigInt(input || "0");
-    const cafe = await Cafe();
+    const amount = BigNumber.from(input || "0");
+    const cafe = await CafeContract();
 
     if (action === "deposit") {
       // Check allowance
       const token = await ERC20(pool.token);
       if (!(await token.checkAllowance(config.cafe.address, amount))) {
-        const tx = await token.approve(
-          config.cafe.address,
-          toBigInt(MaxUint256)
-        );
+        const tx = await token.approve(config.cafe.address, MaxUint256);
         await tx.wait();
       }
 
@@ -254,12 +265,12 @@ const PoolTr = ({
   pool: Pool;
   active: boolean;
   onSettings: () => void;
-  rentPerSecond: bigint;
+  rentPerSecond: BigNumber;
   refetch: () => void;
   showPendingRent: boolean;
 }) => {
   const bonus =
-    Date.now() / 1000 < cafe.bonusEndTimestamp
+    Date.now() / 1000 < Number(cafe.bonusEndTimestamp)
       ? Number(cafe.bonusMultiplier)
       : 1;
   const rentPrecision = 1e18;
@@ -284,7 +295,7 @@ const PoolTr = ({
   }, [cafe, showPendingRent]);
 
   const harvest = async () => {
-    const cafe = await Cafe();
+    const cafe = await CafeContract();
     try {
       await cafe.harvest(pool.id);
       refetch();
@@ -349,21 +360,12 @@ const PoolTr = ({
 };
 
 type FarmPageProps = RouteComponentProps;
-type Cafe = {
-  rentPerSecond: bigint;
-  totalAllocation: bigint;
-  withdrawFeePrecision: bigint;
-  accRentPrecision: bigint;
-  bonusEndTimestamp: bigint;
-  bonusMultiplier: bigint;
-  pools: [Pool];
-};
 
 export const FarmPage = (_: FarmPageProps) => {
   const [address] = useStore.address();
-  const [active, setActive] = useState<bigint | null>();
-  const changeActive = (id: bigint) => {
-    setActive(active === id ? null : id);
+  const [active, setActive] = useState(NegativeOne);
+  const changeActive = (id: BigNumber) => {
+    setActive(active.eq(id) ? NegativeOne : id);
   };
 
   const [result, refresh] = useQuery<{ cafe: Cafe }>({
@@ -424,13 +426,12 @@ export const FarmPage = (_: FarmPageProps) => {
               <tbody>
                 {cafe.pools.map((pool) => (
                   <PoolTr
-                    rentPerSecond={
-                      (pool.allocation * cafe.rentPerSecond) /
-                      cafe.totalAllocation
-                    }
+                    rentPerSecond={pool.allocation
+                      .mul(cafe.rentPerSecond)
+                      .div(cafe.totalAllocation)}
                     cafe={cafe}
                     pool={pool}
-                    active={active === pool.id}
+                    active={active.eq(pool.id)}
                     onSettings={() => changeActive(pool.id)}
                     refetch={refetch}
                     showPendingRent={!!address}

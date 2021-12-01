@@ -1,33 +1,35 @@
+import type { BigNumber } from "@ethersproject/bignumber";
+
 export type Pool = {
-  id: bigint;
+  id: BigNumber;
 };
 
 export type AuctionContract = {
   address: string;
-  buy: (id: bigint, bid: bigint) => Promise<void>;
+  buy: (id: BigNumber, bid: BigNumber) => Promise<void>;
 };
 
 type StealablePropertyOwner = {
   id: string;
   user: string;
-  protectedUntil: bigint;
-  since: bigint;
-  price: bigint;
+  protectedUntil: BigNumber;
+  since: BigNumber;
+  price: BigNumber;
 };
 
 export type StealableProperty = {
-  id: bigint;
+  id: BigNumber;
   name: string;
-  cap: bigint;
-  minted: bigint;
+  cap: BigNumber;
+  minted: BigNumber;
   pools: Pool[];
-  multiplier: bigint;
-  bonus: bigint;
-  protection: bigint;
-  startRatio: bigint;
-  endRatio: bigint;
-  duration: bigint;
-  keepRatio: bigint;
+  multiplier: BigNumber;
+  bonus: BigNumber;
+  protection: BigNumber;
+  startRatio: BigNumber;
+  endRatio: BigNumber;
+  duration: BigNumber;
+  keepRatio: BigNumber;
   factory: {
     uri: string;
   };
@@ -36,16 +38,16 @@ export type StealableProperty = {
 
 export type PropertyAuctionContent = {
   id: string;
-  count: bigint;
-  weight: bigint;
+  count: BigNumber;
+  weight: BigNumber;
   property: StealableProperty;
 };
 
 export type PropertyAuction = {
-  id: bigint;
-  startPrice: bigint;
-  endPrice: bigint;
-  startTimestamp: bigint;
-  duration: bigint;
+  id: BigNumber;
+  startPrice: BigNumber;
+  endPrice: BigNumber;
+  startTimestamp: BigNumber;
+  duration: BigNumber;
   content: PropertyAuctionContent[];
 };

@@ -1,13 +1,9 @@
-import { BigNumber } from "@ethersproject/bignumber";
 import {
   Web3Provider,
   JsonRpcProvider,
   WebSocketProvider,
 } from "@ethersproject/providers";
 import config from "../../config/default";
-
-export const toBigInt = (value: BigNumber) =>
-  BigInt(BigNumber.from(value).toString());
 
 export const cleanOutput = (object: Array<any>) => {
   const keys = new Set(Object.keys([...object]));
@@ -17,8 +13,6 @@ export const cleanOutput = (object: Array<any>) => {
   for (const [key, value] of Object.entries(result)) {
     if (!isBasicArray && keys.has(key)) {
       delete result[key];
-    } else if (BigNumber.isBigNumber(value)) {
-      result[key] = toBigInt(value);
     } else if (Array.isArray(value)) {
       result[key] = cleanOutput(value);
     }

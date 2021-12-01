@@ -1,22 +1,22 @@
 import { Contract } from "@ethersproject/contracts";
-import { BigNumber } from "@ethersproject/bignumber";
+import type { BigNumber } from "@ethersproject/bignumber";
 
 import abi from "../../data/abis/erc20.json";
-import { getSigner, toBigInt } from "../ethereum";
+import { getSigner } from "../ethereum";
 
 export const ERC20 = async (address: string) => {
   const signer = getSigner();
   const contract = new Contract(address, abi, signer);
 
-  const checkAllowance = async (spender: string, amount: bigint) => {
+  const checkAllowance = async (spender: string, amount: BigNumber) => {
     const allowance: BigNumber = await contract.allowance(
       signer.getAddress(),
       spender
     );
-    return toBigInt(allowance) > amount;
+    return allowance.gt(amount);
   };
 
-  const approve = async (address: string, amount: bigint) => {
+  const approve = async (address: string, amount: BigNumber) => {
     return contract.approve(address, amount);
   };
 

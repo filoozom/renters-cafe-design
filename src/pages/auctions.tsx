@@ -1,6 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
 import type { RouteComponentProps } from "@reach/router";
 import { useQuery } from "urql";
+import type { BigNumber } from "@ethersproject/bignumber";
 
 import config from "../../config/default";
 import { getProvider } from "../lib/ethereum";
@@ -57,7 +58,7 @@ const AuctionsQuery = `
 
 type PropertyAuctionCut = {
   user: string;
-  amount: bigint;
+  amount: BigNumber;
 };
 
 type PropertyAuctionFactory = {

@@ -10,6 +10,7 @@ import {
   StealableProperty,
 } from "../components/auctions/types";
 import { Auctions } from "../components/auctions/auctions";
+import { One } from "@ethersproject/constants";
 
 const StealingQuery = `
   query ($stealableProperties: ID!) {
@@ -102,15 +103,15 @@ const PropertyCards = () => {
       const [owner] = property.owners;
       return {
         id: property.id,
-        startPrice: (owner.price * property.startRatio) / 10000n,
-        endPrice: (owner.price * property.startRatio) / 10000n,
+        startPrice: owner.price.mul(property.startRatio).div(10000),
+        endPrice: owner.price.mul(property.startRatio).div(10000),
         startTimestamp: owner.protectedUntil,
         duration: property.duration,
         content: [
           {
             id: "0",
-            count: 1n,
-            weight: 1n,
+            count: One,
+            weight: One,
             property,
           },
         ],
