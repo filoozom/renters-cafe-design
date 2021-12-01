@@ -195,7 +195,7 @@ export const AuctionProperty = ({
           <ul class="list-disc list-inside">
             {/* TODO: Insert actual pool names */}
             {property.pools.map(({ id }) => (
-              <li>{id}</li>
+              <li>{id.toString()}</li>
             ))}
           </ul>
         ) : (
