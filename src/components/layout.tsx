@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { ethers } from "ethers";
+import { Web3Provider } from "@ethersproject/providers";
 import { Link } from "@reach/router";
 import classnames from "classnames";
 import { differenceInMilliseconds } from "date-fns";
@@ -20,7 +20,7 @@ import { Alerts } from "./alerts/alerts";
 
 const WalletButton = () => {
   const { ethereum } = window;
-  const provider = new ethers.providers.Web3Provider(ethereum);
+  const provider = new Web3Provider(ethereum);
   const signer = provider.getSigner();
 
   const [address, setAddress] = useStore.address();

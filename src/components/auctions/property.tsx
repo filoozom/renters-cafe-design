@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from "preact/hooks";
 import { differenceInMilliseconds, intervalToDuration } from "date-fns";
-import { constants } from "ethers";
+import { MaxUint256 } from "@ethersproject/constants";
 
 // Config
 import config from "../../../config/default";
@@ -131,10 +131,7 @@ export const AuctionProperty = ({
       // Check allowance
       const token = await ERC20(config.rent.address);
       if (!(await token.checkAllowance(contract.address, price))) {
-        const tx = await token.approve(
-          contract.address,
-          toBigInt(constants.MaxUint256)
-        );
+        const tx = await token.approve(contract.address, toBigInt(MaxUint256));
         await tx.wait();
       }
 

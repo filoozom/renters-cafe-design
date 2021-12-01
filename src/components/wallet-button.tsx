@@ -1,7 +1,7 @@
 import { ComponentChildren } from "preact";
 import classNames from "classnames";
 import { useStore } from "../store";
-import { providers } from "ethers";
+import { Web3Provider } from "@ethersproject/providers";
 import { useContext, useState } from "preact/hooks";
 import { AlertsContext, AlertType } from "./alerts/alerts";
 
@@ -33,7 +33,7 @@ export const WalletButton = ({
     try {
       if (!address) {
         const { ethereum } = window;
-        const provider = new providers.Web3Provider(ethereum);
+        const provider = new Web3Provider(ethereum);
         await provider.send("eth_requestAccounts", []);
       } else {
         await onClick();

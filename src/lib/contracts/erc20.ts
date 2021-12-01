@@ -1,7 +1,7 @@
-import { Contract, BigNumber } from "ethers";
+import { Contract } from "@ethersproject/contracts";
+import { BigNumber } from "@ethersproject/bignumber";
 
 import abi from "../../data/abis/erc20.json";
-import config from "../../../config/default";
 import { getSigner, toBigInt } from "../ethereum";
 
 export const ERC20 = async (address: string) => {

@@ -1,4 +1,4 @@
-import { Contract } from "ethers";
+import { Contract } from "@ethersproject/contracts";
 
 import abi from "../../data/abis/lp.json";
 import config from "../../../config/default";

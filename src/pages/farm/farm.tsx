@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from "preact/hooks";
 import classnames from "classnames";
 import type { RouteComponentProps } from "@reach/router";
 import { useQuery } from "urql";
-import { constants } from "ethers";
+import { MaxUint256 } from "@ethersproject/constants";
 
 import classes from "./farm.module.css";
 
@@ -173,7 +173,7 @@ const PoolSettings = ({
       if (!(await token.checkAllowance(config.cafe.address, amount))) {
         const tx = await token.approve(
           config.cafe.address,
-          toBigInt(constants.MaxUint256)
+          toBigInt(MaxUint256)
         );
         await tx.wait();
       }
