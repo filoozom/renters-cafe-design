@@ -9,7 +9,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import classes from "./farm.module.css";
 
 import type { Pool } from "../../types/pool";
-import { CogIcon } from "../../components/icons/cog";
+import { SwitchIcon } from "../../components/icons/switch";
 import { Cafe as CafeContract } from "../../lib/contracts/cafe";
 import { LP } from "../../lib/contracts/lp";
 
@@ -349,7 +349,7 @@ const PoolTr = ({
           </div>
           <div class="btn btn-square btn-ghost" onClick={onSettings}>
             <div data-tip="Deposit / withdraw" class="tooltip tooltip-top">
-              <CogIcon />
+              <SwitchIcon />
             </div>
           </div>
         </td>
