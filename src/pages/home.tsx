@@ -23,8 +23,8 @@ const ConnectWallet = () => {
       <div class={classnames("modal", open && "modal-open")}>
         <div class="modal-box">
           <p class="text-neutral text-justify">
-            Renter Cafe hasn't launched yet, but be sure to come back on
-            December 1st!
+            Renter Cafe hasn't launched yet, but be sure to come back on January
+            3rd!
           </p>
           <div class="modal-action">
             <button class="btn" onClick={() => setOpen(false)}>

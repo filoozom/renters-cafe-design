@@ -28,4 +28,4 @@ export default {
 };
 
 export const simulateLaunched = true;
-export const releaseDate = new Date("2021-12-12 17:00:00 GMT+0100");
+export const releaseDate = new Date("2022-01-03 17:00:00 GMT+0100");
