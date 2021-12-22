@@ -19,7 +19,7 @@ import { ERC20 } from "../../lib/contracts/erc20";
 import config from "../../../config/default";
 import { getProvider } from "../../lib/ethereum";
 import { GiftIcon } from "../../components/icons/gift";
-import { formatNumber } from "../../lib/tools";
+import { formatNumber, withPreventPropagation } from "../../lib/tools";
 import { WalletButton } from "../../components/wallet-button";
 
 type Cafe = {
@@ -301,7 +301,10 @@ const PoolTr = ({
 
   return (
     <>
-      <tr class={`${active ? classes.selected : ""}`}>
+      <tr
+        class={classnames("cursor-pointer", active && classes.selected)}
+        onClick={onSettings}
+      >
         <td class="p-3 flex items-center">
           <div class="-space-x-6 avatar-group">
             <div class={`avatar ${classes.icon}`}>
@@ -339,12 +342,15 @@ const PoolTr = ({
                   : "Connect your wallet to unlock harvesting"
               }
               class="tooltip tooltip-top"
-              onClick={harvest}
+              onClick={withPreventPropagation(harvest)}
             >
               <GiftIcon />
             </div>
           </div>
-          <div class="btn btn-square btn-ghost" onClick={onSettings}>
+          <div
+            class="btn btn-square btn-ghost"
+            onClick={withPreventPropagation(onSettings)}
+          >
             <div data-tip="Deposit / withdraw" class="tooltip tooltip-top">
               <SwitchIcon />
             </div>

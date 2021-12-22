@@ -12,3 +12,10 @@ export const compareBigNumber = (a: BigNumber, b: BigNumber) => {
 
   return a.gt(b) ? 1 : -1;
 };
+
+export const withPreventPropagation = (fn: (event: MouseEvent) => void) => {
+  return (event: MouseEvent) => {
+    event.stopPropagation();
+    fn(event);
+  };
+};
