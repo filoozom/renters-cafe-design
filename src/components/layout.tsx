@@ -101,6 +101,20 @@ export const Layout = ({ children, onlyHome = false }: LayoutProps) => {
       url: "https://github.com/renter-cafe",
     },
   ];
+  const menu = [
+    {
+      text: "Yield",
+      url: "/",
+    },
+    {
+      text: "Auctions",
+      url: "/auctions",
+    },
+    {
+      text: "Stealing",
+      url: "/stealing",
+    },
+  ];
 
   useEffect(() => {
     const run = () => {
@@ -132,19 +146,12 @@ export const Layout = ({ children, onlyHome = false }: LayoutProps) => {
           </div>
           <div class="hidden px-2 mx-2 navbar-center sm:flex">
             <div class="flex items-stretch">
-              {showLinks && (
-                <>
-                  <Link className="btn btn-ghost rounded-btn" to="/">
-                    Yield
+              {showLinks &&
+                menu.map(({ text, url }) => (
+                  <Link className="btn btn-ghost rounded-btn" to={url}>
+                    {text}
                   </Link>
-                  <Link className="btn btn-ghost rounded-btn" to="/auctions">
-                    Auctions
-                  </Link>
-                  <Link className="btn btn-ghost rounded-btn" to="/stealing">
-                    Stealing
-                  </Link>
-                </>
-              )}
+                ))}
               <a
                 className="btn btn-ghost rounded-btn"
                 href="https://docs.renter.cafe/"
@@ -175,19 +182,12 @@ export const Layout = ({ children, onlyHome = false }: LayoutProps) => {
       <div class="drawer-side">
         <label for="navbar-drawer" class="drawer-overlay" />
         <ul class="p-4 overflow-y-auto menu w-80 bg-base-100">
-          {showLinks && (
-            <>
+          {showLinks &&
+            menu.map(({ text, url }) => (
               <li>
-                <Link to="/">Yield</Link>
+                <Link to={url}>{text}</Link>
               </li>
-              <li>
-                <Link to="/auctions">Auctions</Link>
-              </li>
-              <li>
-                <Link to="/stealing">Stealing</Link>
-              </li>
-            </>
-          )}
+            ))}
           <li>
             <a href="https://docs.renter.cafe/" target="_blank">
               Docs
