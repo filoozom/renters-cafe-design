@@ -10,6 +10,7 @@ import { DrawerIcon } from "./icons/drawer";
 import { TwitterIcon } from "./icons/twitter";
 import { DiscordIcon } from "./icons/discord";
 import { TelegramIcon } from "./icons/telegram";
+import { GitHubIcon } from "./icons/github";
 import { Logo } from "./logo";
 
 import { useStore } from "../store";
@@ -82,6 +83,24 @@ type LayoutProps = {
 export const Layout = ({ children, onlyHome = false }: LayoutProps) => {
   const [launched, setLaunched] = useState(false);
   const showLinks = !onlyHome && (simulateLaunched || launched);
+  const icons = [
+    {
+      Icon: TwitterIcon,
+      url: "https://twitter.com/rentercafe",
+    },
+    {
+      Icon: DiscordIcon,
+      url: "https://discord.gg/RPZNtweHEF",
+    },
+    {
+      Icon: TelegramIcon,
+      url: "https://t.co/HDGcX3S9Ov",
+    },
+    {
+      Icon: GitHubIcon,
+      url: "https://github.com/renter-cafe",
+    },
+  ];
 
   useEffect(() => {
     const run = () => {
@@ -145,15 +164,11 @@ export const Layout = ({ children, onlyHome = false }: LayoutProps) => {
         <footer class="flex items-center p-4 bg-neutral text-neutral-content justify-between flex-initial flex-col sm:flex-row">
           <p>No rights reserved :-)</p>
           <div class="flex gap-4">
-            <a target="_blank" href="https://twitter.com/rentercafe">
-              <TwitterIcon />
-            </a>
-            <a target="_blank" href="https://discord.gg/RPZNtweHEF">
-              <DiscordIcon />
-            </a>
-            <a target="_blank" href="https://t.co/HDGcX3S9Ov">
-              <TelegramIcon />
-            </a>
+            {icons.map(({ Icon, url }) => (
+              <a class="flex items-center" target="_blank" href={url}>
+                <Icon />
+              </a>
+            ))}
           </div>
         </footer>
       </div>
