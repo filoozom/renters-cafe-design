@@ -52,7 +52,7 @@ export const Alerts = () => {
   const { alerts, removeAlert } = useContext(AlertsContext);
 
   return (
-    <div class="stack absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 bottom-4">
+    <div class="stack absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bottom-4">
       {alerts.map((alert, i) => (
         <div class={`alert ${classes[errors[alert.type]]}`}>
           <div class="flex-1 pl-4">
