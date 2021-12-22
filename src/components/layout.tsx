@@ -224,10 +224,10 @@ export const Layout = ({ children, onlyHome = false }: LayoutProps) => {
               <DrawerIcon />
             </label>
           </div>
-          <div class="navbar-start sm:ml-2">
+          <div class="grow justify-start sm:ml-2">
             <Link className="flex items-center" to="/">
               <Logo />
-              <span class="ml-2 sm:block hidden">Renter.Cafe</span>
+              <span class="ml-2 md:block hidden">Renter.Cafe</span>
             </Link>
           </div>
           <div class="hidden px-2 mx-2 navbar-center sm:flex">
@@ -248,7 +248,7 @@ export const Layout = ({ children, onlyHome = false }: LayoutProps) => {
             </div>
           </div>
           {showLinks && (
-            <div class="navbar-end">
+            <div class="grow justify-end">
               <WrongNetworkButton />
               <WalletButton />
             </div>
