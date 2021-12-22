@@ -1,5 +1,4 @@
 import { useEffect, useState } from "preact/hooks";
-import { Web3Provider } from "@ethersproject/providers";
 import { Link } from "@reach/router";
 import classnames from "classnames";
 import { differenceInMilliseconds } from "date-fns";
@@ -14,6 +13,9 @@ import { GitHubIcon } from "./icons/github";
 import { Logo } from "./logo";
 
 import { useStore } from "../store";
+
+// Lib
+import { getEthereum } from "../lib/ethereum";
 
 // Config
 import { releaseDate, simulateLaunched } from "../../config/default";
@@ -55,15 +57,12 @@ const MENU = [
 ];
 
 const WalletButton = () => {
-  const { ethereum } = window;
-  const provider = new Web3Provider(ethereum);
-  const signer = provider.getSigner();
-
+  const { ethereum, provider, signer } = getEthereum();
   const [address, setAddress] = useStore.address();
   const [loading, setLoading] = useState<boolean>(false);
 
   const connectWallet = async () => {
-    if (loading || address) {
+    if (loading || address || !provider) {
       return;
     }
 
@@ -76,6 +75,11 @@ const WalletButton = () => {
 
   // Fetch current logged-in address
   useEffect(() => {
+    if (!signer || !ethereum) {
+      // TODO: Add "install MetaMask" popup
+      return;
+    }
+
     signer
       .getAddress()
       .then(setAddress)

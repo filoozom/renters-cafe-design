@@ -3,10 +3,10 @@ import { Contract } from "@ethersproject/contracts";
 import abi from "../../data/abis/lp.json";
 import config from "../../../config/default";
 import type { LP as LPType } from "../../types/lp";
-import { getSigner } from "../ethereum";
+import { getEthereum } from "../ethereum";
 
 export const LP = async (address: string) => {
-  const signer = getSigner();
+  const { signer } = getEthereum();
   const contract = new Contract(address, abi, signer);
 
   const getBalance = async (

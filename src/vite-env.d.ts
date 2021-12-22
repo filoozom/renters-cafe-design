@@ -1,6 +1,12 @@
+import type { ExternalProvider } from "@ethersproject/providers";
+
 /// <reference types="vite/client" />
-interface Window {
-  ethereum: any;
+declare global {
+  interface Window {
+    ethereum?: ExternalProvider & {
+      on<K extends EventKeys>(event: K, eventHandler: EventHandler<K>): void;
+    };
+  }
 }
 
 declare module "teaful" {

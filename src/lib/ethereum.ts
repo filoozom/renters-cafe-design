@@ -21,12 +21,6 @@ export const cleanOutput = (object: Array<any>) => {
   return result;
 };
 
-export const getSigner = () => {
-  const { ethereum } = window;
-  const provider = new Web3Provider(ethereum);
-  return provider.getSigner();
-};
-
 export const getProvider = (type: "http" | "ws") => {
   switch (type) {
     case "http":
@@ -34,4 +28,16 @@ export const getProvider = (type: "http" | "ws") => {
     case "ws":
       return new WebSocketProvider(config.rpc[type]);
   }
+};
+
+export const getEthereum = () => {
+  const { ethereum } = window;
+  if (!ethereum) {
+    return {};
+  }
+
+  const provider = new Web3Provider(ethereum);
+  const signer = provider.getSigner();
+
+  return { ethereum, provider, signer };
 };

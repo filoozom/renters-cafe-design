@@ -3,12 +3,12 @@ import type { BigNumber } from "@ethersproject/bignumber";
 
 import abi from "../../data/abis/cafe.json";
 import config from "../../../config/default";
-import { getSigner } from "../ethereum";
+import { getEthereum } from "../ethereum";
 
 const { address } = config.cafe;
 
 export const Cafe = async () => {
-  const signer = getSigner();
+  const { signer } = getEthereum();
   const contract = new Contract(address, abi, signer);
 
   const deposit = async (poolId: BigNumber, amount: BigNumber) => {
