@@ -19,6 +19,41 @@ import { useStore } from "../store";
 import { releaseDate, simulateLaunched } from "../../config/default";
 import { Alerts } from "./alerts/alerts";
 
+// Constants
+const ICONS = [
+  {
+    Icon: TwitterIcon,
+    url: "https://twitter.com/rentercafe",
+  },
+  {
+    Icon: DiscordIcon,
+    url: "https://discord.gg/RPZNtweHEF",
+  },
+  {
+    Icon: TelegramIcon,
+    url: "https://t.co/HDGcX3S9Ov",
+  },
+  {
+    Icon: GitHubIcon,
+    url: "https://github.com/renter-cafe",
+  },
+];
+
+const MENU = [
+  {
+    text: "Yield",
+    url: "/",
+  },
+  {
+    text: "Auctions",
+    url: "/auctions",
+  },
+  {
+    text: "Stealing",
+    url: "/stealing",
+  },
+];
+
 const WalletButton = () => {
   const { ethereum } = window;
   const provider = new Web3Provider(ethereum);
@@ -83,38 +118,6 @@ type LayoutProps = {
 export const Layout = ({ children, onlyHome = false }: LayoutProps) => {
   const [launched, setLaunched] = useState(false);
   const showLinks = !onlyHome && (simulateLaunched || launched);
-  const icons = [
-    {
-      Icon: TwitterIcon,
-      url: "https://twitter.com/rentercafe",
-    },
-    {
-      Icon: DiscordIcon,
-      url: "https://discord.gg/RPZNtweHEF",
-    },
-    {
-      Icon: TelegramIcon,
-      url: "https://t.co/HDGcX3S9Ov",
-    },
-    {
-      Icon: GitHubIcon,
-      url: "https://github.com/renter-cafe",
-    },
-  ];
-  const menu = [
-    {
-      text: "Yield",
-      url: "/",
-    },
-    {
-      text: "Auctions",
-      url: "/auctions",
-    },
-    {
-      text: "Stealing",
-      url: "/stealing",
-    },
-  ];
 
   useEffect(() => {
     const run = () => {
@@ -147,7 +150,7 @@ export const Layout = ({ children, onlyHome = false }: LayoutProps) => {
           <div class="hidden px-2 mx-2 navbar-center sm:flex">
             <div class="flex items-stretch">
               {showLinks &&
-                menu.map(({ text, url }) => (
+                MENU.map(({ text, url }) => (
                   <Link className="btn btn-ghost rounded-btn" to={url}>
                     {text}
                   </Link>
@@ -171,7 +174,7 @@ export const Layout = ({ children, onlyHome = false }: LayoutProps) => {
         <footer class="flex items-center p-4 bg-neutral text-neutral-content justify-between flex-initial flex-col sm:flex-row">
           <p>No rights reserved :-)</p>
           <div class="flex gap-4">
-            {icons.map(({ Icon, url }) => (
+            {ICONS.map(({ Icon, url }) => (
               <a class="flex items-center" target="_blank" href={url}>
                 <Icon />
               </a>
@@ -183,7 +186,7 @@ export const Layout = ({ children, onlyHome = false }: LayoutProps) => {
         <label for="navbar-drawer" class="drawer-overlay" />
         <ul class="p-4 overflow-y-auto menu w-80 bg-base-100">
           {showLinks &&
-            menu.map(({ text, url }) => (
+            MENU.map(({ text, url }) => (
               <li>
                 <Link to={url}>{text}</Link>
               </li>
