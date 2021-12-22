@@ -4,7 +4,7 @@ import { MaxUint256, Zero } from "@ethersproject/constants";
 import { BigNumber } from "@ethersproject/bignumber";
 
 // Config
-import config from "../../../config/default";
+import config from "../../../config";
 
 // Lib
 import { ERC20 } from "../../lib/contracts/erc20";

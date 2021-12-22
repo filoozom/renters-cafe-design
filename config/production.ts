@@ -29,3 +29,10 @@ export default {
 
 export const simulateLaunched = true;
 export const releaseDate = new Date("2022-01-03 17:00:00 GMT+0100");
+export const chain = {
+  chainId: "0xa86a",
+  chainName: "Avalanche",
+  nativeCurrency: { name: "AVAX", symbol: "AVAX", decimals: 18 },
+  rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
+  blockExplorerUrls: ["https://snowtrace.io/"],
+};

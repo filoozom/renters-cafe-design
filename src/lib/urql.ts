@@ -8,7 +8,7 @@ import {
   Cache,
 } from "@urql/exchange-graphcache";
 
-import config from "../../config/default";
+import config from "../../config";
 
 const toBigNumber = (
   parent: DataFields,

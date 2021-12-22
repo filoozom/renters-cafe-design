@@ -3,7 +3,7 @@ import type { RouteComponentProps } from "@reach/router";
 import { useQuery } from "urql";
 import type { BigNumber } from "@ethersproject/bignumber";
 
-import config from "../../config/default";
+import config from "../../config";
 import { getProvider } from "../lib/ethereum";
 import { PropertyAuction as PropertyAuctionContract } from "../lib/contracts/property-auction";
 import { Auctions } from "../components/auctions/auctions";

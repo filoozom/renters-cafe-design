@@ -3,7 +3,7 @@ import {
   JsonRpcProvider,
   WebSocketProvider,
 } from "@ethersproject/providers";
-import config from "../../config/default";
+import config from "../../config";
 
 export const cleanOutput = (object: Array<any>) => {
   const keys = new Set(Object.keys([...object]));

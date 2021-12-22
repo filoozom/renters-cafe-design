@@ -4,6 +4,8 @@ import type { ExternalProvider } from "@ethersproject/providers";
 declare global {
   interface Window {
     ethereum?: ExternalProvider & {
+      chainId: string;
+
       on<K extends EventKeys>(event: K, eventHandler: EventHandler<K>): void;
     };
   }

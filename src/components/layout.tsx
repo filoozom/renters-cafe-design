@@ -1,25 +1,30 @@
-import { useEffect, useState } from "preact/hooks";
+import type { ComponentChildren } from "preact";
+import { useContext, useEffect, useState } from "preact/hooks";
 import { Link } from "@reach/router";
 import classnames from "classnames";
 import { differenceInMilliseconds } from "date-fns";
 
-import type { ComponentChildren } from "preact";
-
-import { DrawerIcon } from "./icons/drawer";
-import { TwitterIcon } from "./icons/twitter";
-import { DiscordIcon } from "./icons/discord";
-import { TelegramIcon } from "./icons/telegram";
-import { GitHubIcon } from "./icons/github";
-import { Logo } from "./logo";
-
+// Store
 import { useStore } from "../store";
 
 // Lib
 import { getEthereum } from "../lib/ethereum";
 
 // Config
-import { releaseDate, simulateLaunched } from "../../config/default";
+import { releaseDate, simulateLaunched, chain } from "../../config";
 import { Alerts } from "./alerts/alerts";
+
+// Components
+import { AlertsContext, AlertType } from "./alerts/alerts";
+import { ExclamationIcon } from "./icons/exclamation";
+
+// Icons
+import { DrawerIcon } from "./icons/drawer";
+import { TwitterIcon } from "./icons/twitter";
+import { DiscordIcon } from "./icons/discord";
+import { TelegramIcon } from "./icons/telegram";
+import { GitHubIcon } from "./icons/github";
+import { Logo } from "./logo";
 
 // Constants
 const ICONS = [
@@ -114,6 +119,80 @@ const WalletButton = () => {
   );
 };
 
+const WrongNetworkButton = () => {
+  const { ethereum, provider } = getEthereum();
+  const [chainId, setChainId] = useState<string | undefined>(ethereum?.chainId);
+  const { addAlert } = useContext(AlertsContext);
+
+  useEffect(() => {
+    ethereum?.on("chainChanged", setChainId);
+    return () => {
+      provider?.removeListener("chainChanged", setChainId);
+    };
+  }, []);
+
+  if (chainId === chain.chainId) {
+    return null;
+  }
+
+  if (chainId === undefined) {
+    // TODO: Show popup to install MetaMask
+  }
+
+  const switchNetwork = async () => {
+    if (!ethereum) {
+      return;
+    }
+
+    try {
+      await ethereum.request?.({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: chain.chainId }],
+      });
+    } catch (err: any) {
+      if (err.code === 4902) {
+        try {
+          await ethereum.request?.({
+            method: "wallet_addEthereumChain",
+            params: [chain],
+          });
+        } catch (err: any) {
+          addAlert({
+            type: AlertType.ERROR,
+            message: err?.message,
+          });
+        }
+        return;
+      }
+
+      addAlert({
+        type: AlertType.ERROR,
+        message: err?.message,
+      });
+    }
+
+    ethereum?.request?.({
+      method: "wallet_addEthereumChain",
+      params: [chain],
+    });
+  };
+
+  return (
+    <div data-tip="Wrong network" class="tooltip tooltip-bottom mr-2">
+      <button
+        class="btn btn-primary"
+        style={{
+          "--tw-bg-opacity": 0.7,
+          "--tw-border-opacity": 0.7,
+        }}
+        onClick={switchNetwork}
+      >
+        <ExclamationIcon />
+      </button>
+    </div>
+  );
+};
+
 type LayoutProps = {
   children: ComponentChildren;
   onlyHome?: boolean;
@@ -170,6 +249,7 @@ export const Layout = ({ children, onlyHome = false }: LayoutProps) => {
           </div>
           {showLinks && (
             <div class="navbar-end">
+              <WrongNetworkButton />
               <WalletButton />
             </div>
           )}

@@ -2,7 +2,7 @@ import { Contract } from "@ethersproject/contracts";
 import type { BigNumber } from "@ethersproject/bignumber";
 
 import abi from "../../data/abis/cafe.json";
-import config from "../../../config/default";
+import config from "../../../config";
 import { getEthereum } from "../ethereum";
 
 const { address } = config.cafe;

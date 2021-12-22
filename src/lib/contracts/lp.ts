@@ -1,7 +1,7 @@
 import { Contract } from "@ethersproject/contracts";
 
 import abi from "../../data/abis/lp.json";
-import config from "../../../config/default";
+import config from "../../../config";
 import type { LP as LPType } from "../../types/lp";
 import { getEthereum } from "../ethereum";
 

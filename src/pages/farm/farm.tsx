@@ -16,7 +16,7 @@ import { LP } from "../../lib/contracts/lp";
 import { useStore } from "../../store";
 import { ERC20 } from "../../lib/contracts/erc20";
 
-import config from "../../../config/default";
+import config from "../../../config";
 import { getProvider } from "../../lib/ethereum";
 import { GiftIcon } from "../../components/icons/gift";
 import { formatNumber, withPreventPropagation } from "../../lib/tools";

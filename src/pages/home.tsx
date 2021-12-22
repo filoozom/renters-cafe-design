@@ -6,7 +6,7 @@ import classnames from "classnames";
 import { useCountdown } from "../hooks/useCountdown";
 
 // Config
-import { releaseDate } from "../../config/default";
+import { releaseDate } from "../../config";
 
 const ConnectWallet = () => {
   const [open, setOpen] = useState(false);

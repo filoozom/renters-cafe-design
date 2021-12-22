@@ -1,7 +1,7 @@
 import { Contract } from "@ethersproject/contracts";
 
 import abi from "../../data/abis/property-auction.json";
-import config from "../../../config/default";
+import config from "../../../config";
 import { getEthereum } from "../ethereum";
 import type { BigNumber } from "@ethersproject/bignumber";
 

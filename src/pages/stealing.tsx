@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "preact/hooks";
 import type { RouteComponentProps } from "@reach/router";
 import { useQuery } from "urql";
 
-import config from "../../config/default";
+import config from "../../config";
 import { getProvider } from "../lib/ethereum";
 import { StealAuction } from "../lib/contracts/steal-auction";
 import type {
