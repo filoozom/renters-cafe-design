@@ -56,15 +56,13 @@ const Hero = () => (
   <div class="hero py-32 bg-gradient-to-br from-primary to-secondary">
     <div class="text-center hero-content text-accent-content">
       <div class="max-w-lg">
-        <h1 class="mb-8 text-5xl font-bold">
-          Create, sell and collect digital items
-        </h1>
-        <p class="mb-8">
-          Unit of data stored on a digital ledger, called a blockchain, that
-          certifies a digital asset to be unique and therefore not
-          interchangeable
+        <h1 class="mb-8 text-5xl font-bold">Stealing</h1>
+        <p>
+          Everything is accepted in farms and NFTs.
+          <br />
+          Like it? Go ahead and steal it! No prison this time! Your NFT, your
+          ticket to WAGMI land!
         </p>
-        <button class="btn btn-primary">Get Started</button>
       </div>
     </div>
   </div>
