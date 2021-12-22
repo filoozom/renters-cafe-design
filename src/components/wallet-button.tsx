@@ -23,16 +23,16 @@ export const WalletButton = ({
   const [address] = useStore.address();
   const [loading, setLoading] = useState(false);
   const { addAlert } = useContext(AlertsContext);
+  const { ethereum } = window;
 
   const doAction = async () => {
-    if (loading || disabled) {
+    if (loading || disabled || !ethereum) {
       return;
     }
 
     setLoading(true);
     try {
       if (!address) {
-        const { ethereum } = window;
         const provider = new Web3Provider(ethereum);
         await provider.send("eth_requestAccounts", []);
       } else {
