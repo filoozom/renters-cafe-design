@@ -1,4 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { getAddress } from "@ethersproject/address";
+
 import { Provider, createClient, dedupExchange, fetchExchange } from "urql";
 import {
   cacheExchange,
@@ -16,6 +18,13 @@ const toBigNumber = (
   _cache: Cache,
   info: ResolveInfo
 ) => BigNumber.from(parent[info.fieldName]);
+
+const toAddress = (
+  parent: DataFields,
+  _args: Variables,
+  _cache: Cache,
+  info: ResolveInfo
+) => getAddress(parent[info.fieldName] as string);
 
 export const client = createClient({
   url: config.subgraph,
@@ -81,6 +90,9 @@ export const client = createClient({
           since: toBigNumber,
           price: toBigNumber,
           protectedUntil: toBigNumber,
+        },
+        LP: {
+          id: toAddress,
         },
       },
     }),

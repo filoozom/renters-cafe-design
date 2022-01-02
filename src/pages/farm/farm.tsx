@@ -114,12 +114,22 @@ const getPoolName = (pool: Pool) =>
   pool.lp.tokens.map(({ symbol }) => symbol).join("-");
 */
 
-const getPoolName = (pool: Pool) => pool.lp.name;
-
 const getPoolType = (pool: Pool) =>
   pool.lp.name in config.lps.nameToType
     ? (config.lps.nameToType as any)[pool.lp.name]
     : "Unknown";
+
+const getPoolInfo = (pool: Pool) => {
+  return pool.lp.id in config.lps.info && (config.lps.info as any)[pool.lp.id];
+};
+
+const getPoolName = (pool: Pool) => {
+  return getPoolInfo(pool)?.name ?? pool.lp.name;
+};
+
+const getTokenImage = (address: string) => {
+  return `https://github.com/renter-cafe/joe-tokenlists/raw/add-rent-logo/logos/${address}/logo.png`;
+};
 
 const Hero = () => (
   <div class="hero py-32 bg-gradient-to-br from-primary to-accent">
@@ -304,6 +314,8 @@ const PoolTr = ({
     } catch (err) {}
   };
 
+  const info = getPoolInfo(pool);
+
   return (
     <>
       <tr
@@ -312,19 +324,15 @@ const PoolTr = ({
       >
         <td class="p-3 flex items-center">
           <div class="-space-x-6 avatar-group">
-            <div class={`avatar ${classes.icon}`}>
-              <div class="w-12 h-12">
-                <img src="https://res.cloudinary.com/sushi-cdn/image/fetch/w_96/https://raw.githubusercontent.com/sushiswap/logos/main/network/ethereum/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599.jpg" />
-              </div>
+            <div class={`avatar w-12 h-12 ${classes.icon}`}>
+              <img src={getTokenImage(info.tokens[0])} />
             </div>
-            <div class={`avatar ${classes.icon}`}>
-              <div class="w-12 h-12">
-                <img src="https://res.cloudinary.com/sushi-cdn/image/fetch/w_96/https://raw.githubusercontent.com/sushiswap/icons/master/token/eth.jpg" />
-              </div>
+            <div class={`avatar w-12 h-12 ${classes.icon}`}>
+              <img src={getTokenImage(info.tokens[1])} />
             </div>
           </div>
           <div class="ml-2 text-left">
-            <strong>{getPoolName(pool)}</strong>
+            <strong>{info.name}</strong>
             <br />
             {getPoolType(pool)} Pool
           </div>
