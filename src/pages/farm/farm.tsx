@@ -8,7 +8,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 
 import classes from "./farm.module.css";
 
-import type { Pool } from "../../types/pool";
+import type { Pool, Token } from "../../types/pool";
 import { SwitchIcon } from "../../components/icons/switch";
 import { Cafe as CafeContract } from "../../lib/contracts/cafe";
 import { LP } from "../../lib/contracts/lp";
@@ -372,13 +372,9 @@ const PoolTr = ({
 
 type FarmPageProps = RouteComponentProps;
 
-export const FarmPage = (_: FarmPageProps) => {
-  const [address] = useStore.address();
-  const [active, setActive] = useState(NegativeOne);
-  const changeActive = (id: BigNumber) => {
-    setActive(active.eq(id) ? NegativeOne : id);
-  };
-
+const useCafeData = (
+  address: string | null
+): [Cafe | undefined, () => void] => {
   const [result, refresh] = useQuery<{ cafe: Cafe }>({
     query: FarmQuery,
     variables: {
@@ -389,27 +385,119 @@ export const FarmPage = (_: FarmPageProps) => {
 
   const refetch = () => refresh({ requestPolicy: "network-only" });
 
-  useEffect(() => {
-    const provider = getProvider("ws");
-    provider.on("block", refetch);
-    return () => {
-      provider.off("block", refetch);
-    };
-  }, []);
+  return [result.data?.cafe, refetch];
+};
 
-  const cafe = useMemo(() => {
+const UpstreamQuery = `
+  query ($pairs: [ID!]!) {
+    pairs(where: {id_in: $pairs}) {
+      id
+      token0 {
+        id
+        symbol
+      }
+      token1 {
+        id
+        symbol
+      }
+      
+    }
+    user(id: "0x0000000000000000000000000000000000000000") {
+      id
+      liquidityPositions {
+        id
+        pair {
+          id
+          token0 {
+            id
+            symbol
+          }
+        }
+      }
+    }    
+  }
+`;
+
+const useUpstreamData = (cafe: Cafe | undefined) => {
+  const pairs = cafe?.pools.map((pool) => pool.token) ?? [];
+  const [result] = useQuery<{ pairs: Pair[] }>({
+    query: UpstreamQuery,
+    variables: { pairs },
+    context: useMemo(
+      () => ({
+        url: "https://api.thegraph.com/subgraphs/name/traderjoe-xyz/exchange",
+      }),
+      []
+    ),
+  });
+
+  return useMemo(() => {
     if (!result.data) {
       return null;
     }
 
-    const { cafe: data } = result.data;
-    data.pools = data.pools.map((pool) => ({
+    const pairs = new Map<string, Pair>();
+    for (const pair of result.data.pairs) {
+      pairs.set(pair.id, pair);
+    }
+    return pairs;
+  }, [result.data]);
+};
+
+const useBlockNumberChange = (onChange: () => void) => {
+  useEffect(() => {
+    const provider = getProvider("ws");
+    provider.on("block", onChange);
+    return () => {
+      provider.off("block", onChange);
+    };
+  }, []);
+};
+
+type Pair = {
+  id: string;
+  token0: Token;
+  token1: Token;
+};
+
+type UseCleanCafeDataProps = {
+  cafe: Cafe | undefined;
+  upstream: Map<string, Pair> | null;
+};
+
+const useCleanCafeData = ({ cafe, upstream }: UseCleanCafeDataProps) => {
+  return useMemo(() => {
+    if (!cafe) {
+      return null;
+    }
+
+    cafe.pools = cafe.pools.map((pool) => ({
       ...pool,
       user: (pool as any).users?.[0],
+      info: upstream?.get(pool.token),
     })) as [Pool];
 
-    return data;
-  }, [result.data]);
+    return cafe;
+  }, [cafe, upstream]);
+};
+
+const useFarmPageData = (address: string | null): [Cafe | null, () => void] => {
+  const [cafe, refetch] = useCafeData(address);
+  const upstream = useUpstreamData(cafe);
+
+  useBlockNumberChange(refetch);
+
+  return [useCleanCafeData({ cafe, upstream }), refetch];
+};
+
+export const FarmPage = (_: FarmPageProps) => {
+  const [address] = useStore.address();
+  const [active, setActive] = useState(NegativeOne);
+  const changeActive = (id: BigNumber) => {
+    setActive(active.eq(id) ? NegativeOne : id);
+  };
+
+  const [cafe, refetch] = useFarmPageData(address);
 
   if (!cafe) {
     return <p>Loading...</p>;
