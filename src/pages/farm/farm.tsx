@@ -116,6 +116,11 @@ const getPoolName = (pool: Pool) =>
 
 const getPoolName = (pool: Pool) => pool.lp.name;
 
+const getPoolType = (pool: Pool) =>
+  pool.lp.name in config.lps.nameToType
+    ? (config.lps.nameToType as any)[pool.lp.name]
+    : "Unknown";
+
 const Hero = () => (
   <div class="hero py-32 bg-gradient-to-br from-primary to-accent">
     <div class="text-center hero-content text-accent-content">
@@ -321,7 +326,7 @@ const PoolTr = ({
           <div class="ml-2 text-left">
             <strong>{getPoolName(pool)}</strong>
             <br />
-            {pool.lp.type} Pool
+            {getPoolType(pool)} Pool
           </div>
         </td>
         <td class="p-3">$123,456,789</td>
