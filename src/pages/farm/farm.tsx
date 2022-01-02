@@ -109,11 +109,6 @@ const FarmQuery = `
   }
 `;
 
-/*
-const getPoolName = (pool: Pool) =>
-  pool.lp.tokens.map(({ symbol }) => symbol).join("-");
-*/
-
 const getPoolType = (pool: Pool) =>
   pool.lp.name in config.lps.nameToType
     ? (config.lps.nameToType as any)[pool.lp.name]
