@@ -23,8 +23,7 @@ export default {
       "Joe LP Token": "Trader Joe",
     },
   },
-  subgraph:
-    "https://graphs.renter-cafe.apyos.dev/subgraphs/name/renter-cafe/cafe",
+  subgraph: "https://api.thegraph.com/subgraphs/name/renter-cafe/website",
 };
 
 export const simulateLaunched = true;
