@@ -323,7 +323,7 @@ const PoolTr = ({
         onClick={onSettings}
       >
         <td class="p-3 flex items-center">
-          <div class="-space-x-6 avatar-group">
+          <div class="-space-x-4 avatar-group">
             <div class={`avatar w-12 h-12 ${classes.icon}`}>
               <img src={getTokenImage(info.tokens[0])} />
             </div>
