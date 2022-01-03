@@ -5,6 +5,12 @@ export type Token = {
   symbol: string;
 };
 
+export type Finance = {
+  tvl?: number;
+  apr?: number;
+  rentPerSecond: BigNumber;
+};
+
 export type Pool = {
   id: BigNumber;
   token: string;
@@ -28,4 +34,6 @@ export type Pool = {
     token0: Token;
     token1: Token;
   };
+
+  finance: Finance;
 };

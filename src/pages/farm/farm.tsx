@@ -8,7 +8,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 
 import classes from "./farm.module.css";
 
-import type { Pool, Token } from "../../types/pool";
+import type { Finance, Pool, Token } from "../../types/pool";
 import { SwitchIcon } from "../../components/icons/switch";
 import { Cafe as CafeContract } from "../../lib/contracts/cafe";
 import { LP } from "../../lib/contracts/lp";
@@ -264,7 +264,6 @@ const PoolTr = ({
   pool,
   active,
   onSettings,
-  rentPerSecond,
   refetch,
   showPendingRent,
 }: {
@@ -272,7 +271,6 @@ const PoolTr = ({
   pool: Pool;
   active: boolean;
   onSettings: () => void;
-  rentPerSecond: BigNumber;
   refetch: () => void;
   showPendingRent: boolean;
 }) => {
@@ -282,7 +280,8 @@ const PoolTr = ({
       : 1;
   const rentPrecision = 1e18;
   const rentPerDay =
-    ((Number(rentPerSecond) * 60 * 60 * 24) / rentPrecision) * bonus;
+    ((Number(pool.finance.rentPerSecond) * 60 * 60 * 24) / rentPrecision) *
+    bonus;
 
   const [pending, setPending] = useState("0");
 
@@ -332,9 +331,11 @@ const PoolTr = ({
             {getPoolType(pool)} Pool
           </div>
         </td>
-        <td class="p-3">$123,456,789</td>
+        <td class="p-3">${formatNumber(pool.finance?.tvl || 0)}</td>
         <td class="p-3">{formatNumber(rentPerDay)} RENT / day</td>
-        <td class="p-3">123.45%</td>
+        <td class="p-3">
+          {pool.finance?.apr ? formatNumber(100 * pool.finance.apr) : "∞"}%
+        </td>
         {showPendingRent && <td class="p-3">{pending} RENT</td>}
         <td class="p-3 whitespace-nowrap">
           <div
@@ -372,9 +373,7 @@ const PoolTr = ({
 
 type FarmPageProps = RouteComponentProps;
 
-const useCafeData = (
-  address: string | null
-): [Cafe | undefined, () => void] => {
+const useCafeData = (address: string | null): [Cafe | null, () => void] => {
   const [result, refresh] = useQuery<{ cafe: Cafe }>({
     query: FarmQuery,
     variables: {
@@ -385,12 +384,12 @@ const useCafeData = (
 
   const refetch = () => refresh({ requestPolicy: "network-only" });
 
-  return [result.data?.cafe, refetch];
+  return [result.data?.cafe ?? null, refetch];
 };
 
 const UpstreamQuery = `
-  query ($pairs: [ID!]!) {
-    pairs(where: {id_in: $pairs}) {
+  query ($cafe: ID!, $pairs: [ID!]!) {
+    pairs(where: { id_in: $pairs }) {
       id
       token0 {
         id
@@ -400,29 +399,32 @@ const UpstreamQuery = `
         id
         symbol
       }
-      
+      token0Price
+      token1Price
     }
-    user(id: "0x0000000000000000000000000000000000000000") {
+    user(id: $cafe) {
       id
       liquidityPositions {
         id
+        liquidityTokenBalance
         pair {
           id
-          token0 {
-            id
-            symbol
-          }
+          reserveUSD
+          totalSupply
         }
       }
-    }    
+    }
   }
 `;
 
-const useUpstreamData = (cafe: Cafe | undefined) => {
+const useUpstreamData = (cafe: Cafe | null) => {
   const pairs = cafe?.pools.map((pool) => pool.token) ?? [];
-  const [result] = useQuery<{ pairs: Pair[] }>({
+  const [result] = useQuery<{ pairs: Pair[]; user: User }>({
     query: UpstreamQuery,
-    variables: { pairs },
+    variables: {
+      cafe: config.cafe.address.toLocaleLowerCase(),
+      pairs,
+    },
     context: useMemo(
       () => ({
         url: "https://api.thegraph.com/subgraphs/name/traderjoe-xyz/exchange",
@@ -436,11 +438,29 @@ const useUpstreamData = (cafe: Cafe | undefined) => {
       return null;
     }
 
+    let rentPrice;
+
     const pairs = new Map<string, Pair>();
     for (const pair of result.data.pairs) {
       pairs.set(pair.id, pair);
+
+      // RENT-USDT.e
+      if (pair.id === "0x7a66ac439cd568114020abc4fcbefea36947d534") {
+        rentPrice = parseFloat(pair.token1Price);
+      }
     }
-    return pairs;
+
+    const tvls = new Map<string, number>();
+    for (const lp of result.data.user?.liquidityPositions ?? []) {
+      tvls.set(
+        lp.pair.id,
+        (parseFloat(lp.liquidityTokenBalance) /
+          parseFloat(lp.pair.totalSupply)) *
+          parseFloat(lp.pair.reserveUSD)
+      );
+    }
+
+    return { pairs, tvls, rentPrice };
   }, [result.data]);
 };
 
@@ -454,15 +474,37 @@ const useBlockNumberChange = (onChange: () => void) => {
   }, []);
 };
 
+type LiquidityPair = {
+  id: string;
+  reserveUSD: string;
+  totalSupply: string;
+};
+
+type LiquidityPosition = {
+  id: string;
+  liquidityTokenBalance: string;
+  pair: LiquidityPair;
+};
+
+type User = {
+  id: string;
+  liquidityPositions: LiquidityPosition[];
+};
+
 type Pair = {
   id: string;
   token0: Token;
   token1: Token;
+  token0Price: string;
+  token1Price: string;
 };
 
 type UseCleanCafeDataProps = {
-  cafe: Cafe | undefined;
-  upstream: Map<string, Pair> | null;
+  cafe: Cafe | null;
+  upstream: {
+    pairs: Map<string, Pair>;
+    tvls: Map<string, number>;
+  } | null;
 };
 
 const useCleanCafeData = ({ cafe, upstream }: UseCleanCafeDataProps) => {
@@ -471,11 +513,27 @@ const useCleanCafeData = ({ cafe, upstream }: UseCleanCafeDataProps) => {
       return null;
     }
 
-    cafe.pools = cafe.pools.map((pool) => ({
-      ...pool,
-      user: (pool as any).users?.[0],
-      info: upstream?.get(pool.token),
-    })) as [Pool];
+    cafe.pools = cafe.pools.map((pool) => {
+      const tvl = upstream?.tvls.get(pool.token);
+      const finance: Finance = {
+        rentPerSecond: pool.allocation
+          .mul(cafe.rentPerSecond)
+          .div(cafe.totalAllocation),
+      };
+
+      if (tvl) {
+        finance.tvl = tvl;
+        finance.apr =
+          (Number(finance.rentPerSecond) / 1e18 / tvl) * (60 * 60 * 24 * 365);
+      }
+
+      return {
+        ...pool,
+        user: (pool as any).users?.[0],
+        info: upstream?.pairs.get(pool.token),
+        finance,
+      };
+    }) as [Pool];
 
     return cafe;
   }, [cafe, upstream]);
@@ -525,9 +583,6 @@ export const FarmPage = (_: FarmPageProps) => {
               <tbody>
                 {cafe.pools.map((pool) => (
                   <PoolTr
-                    rentPerSecond={pool.allocation
-                      .mul(cafe.rentPerSecond)
-                      .div(cafe.totalAllocation)}
                     cafe={cafe}
                     pool={pool}
                     active={active.eq(pool.id)}
