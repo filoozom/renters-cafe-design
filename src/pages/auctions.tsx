@@ -11,6 +11,7 @@ import type {
   AuctionContract,
   PropertyAuction,
 } from "../components/auctions/types";
+import { Loading } from "../components/loading";
 
 const AuctionsQuery = `
   query ($propertyAuction: ID!, $maxStartTimestamp: BigInt!) {
@@ -109,7 +110,7 @@ const PropertyCards = () => {
   }, []);
 
   if (!result.data || !contract) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
 
   const { propertyAuctionFactory: pa } = result.data;

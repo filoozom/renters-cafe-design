@@ -22,6 +22,7 @@ import { getProvider } from "../../lib/ethereum";
 import { GiftIcon } from "../../components/icons/gift";
 import { formatNumber, withPreventPropagation } from "../../lib/tools";
 import { WalletButton } from "../../components/wallet-button";
+import { Loading } from "../../components/loading";
 
 type Cafe = {
   rentPerSecond: BigNumber;
@@ -559,7 +560,12 @@ export const FarmPage = (_: FarmPageProps) => {
   const [cafe, refetch] = useFarmPageData(address);
 
   if (!cafe) {
-    return <p>Loading...</p>;
+    return (
+      <>
+        <Hero />
+        <Loading />
+      </>
+    );
   }
 
   return (

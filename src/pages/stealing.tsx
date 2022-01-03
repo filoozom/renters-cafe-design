@@ -13,6 +13,7 @@ import type {
 import { Auctions } from "../components/auctions/auctions";
 import { One } from "@ethersproject/constants";
 import { compareBigNumber } from "../lib/tools";
+import { Loading } from "../components/loading";
 
 const StealingQuery = `
   query ($stealableProperties: ID!) {
@@ -125,7 +126,7 @@ const PropertyCards = () => {
   }, [result.data]);
 
   if (!auctions || !contract) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
 
   return (
