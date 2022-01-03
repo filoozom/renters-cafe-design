@@ -50,7 +50,7 @@ const getMultiplier = (cafe: Cafe, from: BigNumber, to: BigNumber) => {
 };
 
 const pendingRent = (cafe: Cafe, pool: Pool) => {
-  if (!pool.user || !pool.total) {
+  if (!pool.user || !pool.total || pool.total.isZero()) {
     return 0n;
   }
 
