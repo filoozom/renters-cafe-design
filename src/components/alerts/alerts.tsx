@@ -4,6 +4,7 @@ import type { ComponentChildren } from "preact";
 import { CloseIcon } from "../icons/close";
 import { ErrorIcon } from "../icons/error";
 
+// @ts-ignore: quick fix
 import classes from "./alerts.module.css";
 
 export enum AlertType {

@@ -6,6 +6,7 @@ import { useQuery } from "urql";
 import { MaxUint256, NegativeOne, Zero } from "@ethersproject/constants";
 import { BigNumber } from "@ethersproject/bignumber";
 
+// @ts-ignore: quick fix
 import classes from "./farm.module.css";
 
 import type { Finance, Pool, Token } from "../../types/pool";
