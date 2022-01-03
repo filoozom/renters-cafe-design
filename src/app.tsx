@@ -18,10 +18,10 @@ export const App = () => (
     <AlertsProvider>
       <Layout>
         <Router primary={false} style={{ height: "100%" }}>
-          <FarmPage path="/" />
+          <HomePage path="/" />
+          <FarmPage path="/farm" />
           <AuctionsPage path="/auctions" />
           <StealingPage path="/stealing" />
-          <HomePage path="/home" />
         </Router>
       </Layout>
     </AlertsProvider>

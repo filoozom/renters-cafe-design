@@ -49,7 +49,7 @@ const ICONS = [
 const MENU = [
   {
     text: "Yield",
-    url: "/",
+    url: "/farm",
   },
   {
     text: "Auctions",

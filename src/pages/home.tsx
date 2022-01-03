@@ -1,4 +1,4 @@
-import type { RouteComponentProps } from "@reach/router";
+import { Redirect, RouteComponentProps } from "@reach/router";
 import { useState } from "preact/hooks";
 import classnames from "classnames";
 
@@ -37,8 +37,34 @@ const ConnectWallet = () => {
   );
 };
 
+const isDone = (duration: Duration | undefined) => {
+  if (!duration) {
+    return false;
+  }
+
+  let sum = 0;
+  const keys = [
+    "years",
+    "months",
+    "weeks",
+    "days",
+    "hours",
+    "minutes",
+    "seconds",
+  ] as (keyof Duration)[];
+
+  for (const key of keys) {
+    sum += duration?.[key] ?? 0;
+  }
+
+  return sum === 0;
+};
+
 const Hero = () => {
   const countdown = useCountdown(releaseDate);
+  if (isDone(countdown)) {
+    return <Redirect noThrow to="/farm" />;
+  }
 
   return (
     <div class="hero bg-gradient-to-br from-primary to-accent h-full">

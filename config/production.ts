@@ -70,7 +70,7 @@ export default {
   subgraph: "https://api.thegraph.com/subgraphs/name/renter-cafe/website",
 };
 
-export const simulateLaunched = true;
+export const simulateLaunched = false;
 export const releaseDate = new Date("2022-01-03 17:00:00 GMT+0100");
 export const chain = {
   chainId: "0xa86a",
