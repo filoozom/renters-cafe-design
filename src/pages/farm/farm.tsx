@@ -1,5 +1,5 @@
 import { JSX } from "preact";
-import { useState, useEffect, useMemo } from "preact/hooks";
+import { useState, useEffect, useMemo, useCallback } from "preact/hooks";
 import classnames from "classnames";
 import type { RouteComponentProps } from "@reach/router";
 import { useQuery } from "urql";
@@ -384,7 +384,16 @@ const useCafeData = (address: string | null): [Cafe | null, () => void] => {
     },
   });
 
-  const refetch = () => refresh({ requestPolicy: "network-only" });
+  const refetch = useCallback(
+    (force = false) => {
+      if (!force && result.fetching) {
+        return;
+      }
+
+      refresh({ requestPolicy: "network-only" });
+    },
+    [refresh, result.fetching]
+  );
 
   return [result.data?.cafe ?? null, refetch];
 };
@@ -473,7 +482,7 @@ const useBlockNumberChange = (onChange: () => void) => {
     return () => {
       provider.off("block", onChange);
     };
-  }, []);
+  }, [onChange]);
 };
 
 type LiquidityPair = {
@@ -545,7 +554,7 @@ const useFarmPageData = (address: string | null): [Cafe | null, () => void] => {
   const [cafe, refetch] = useCafeData(address);
   const upstream = useUpstreamData(cafe);
 
-  useBlockNumberChange(refetch);
+  useBlockNumberChange(() => refetch());
 
   return [useCleanCafeData({ cafe, upstream }), refetch];
 };
