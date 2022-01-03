@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "npm run prepare:main && vite",
-    "build": "npm run prepare:main && npm run vite:build",
-    "build:only-home": "npm run prepare:home && npm run vite:build",
+    "build": "npm run prepare:main && npm run vite:build && npm run create-routes",
+    "build:only-home": "npm run prepare:home && npm run vite:build && npm run create-routes",
     "prepare:home": "node create-index.js home",
     "prepare:main": "node create-index.js main",
+    "create-routes": "node create-routes.js",
     "vite:build": "tsc && vite build",
     "serve": "vite preview"
   },
