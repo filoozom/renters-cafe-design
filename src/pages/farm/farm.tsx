@@ -23,6 +23,7 @@ import { GiftIcon } from "../../components/icons/gift";
 import { formatNumber, withPreventPropagation } from "../../lib/tools";
 import { WalletButton } from "../../components/wallet-button";
 import { Loading } from "../../components/loading";
+import { Disclaimer } from "../../components/disclaimer";
 
 type Cafe = {
   rentPerSecond: BigNumber;
@@ -582,7 +583,8 @@ export const FarmPage = (_: FarmPageProps) => {
       <Hero />
       <div class="hero">
         <div class="max-w-5xl mx-auto text-center hero-content">
-          <div class="overflow-auto lg:overflow-visible ">
+          <div class="overflow-auto lg:overflow-visible">
+            <Disclaimer />
             <table
               class={`border-separate space-y-6 text-center ${classes.table}`}
             >

@@ -5,6 +5,7 @@ import { SadIcon } from "../icons/sad";
 import type { PropertyAuction, AuctionContract } from "./types";
 import { AuctionProperty } from "./property";
 import { AuctionMenu, Availability, BonusType } from "./menu";
+import { Disclaimer } from "../disclaimer";
 
 const hasMultiplier = (auction: PropertyAuction) => {
   return auction.content.some((content) => content.property.multiplier.gt(0));
@@ -70,6 +71,7 @@ export const Auctions = ({
             onBonusType={setBonusType}
             onSearch={() => {}}
           />
+          <Disclaimer class="-mt-2 mb-2" />
           {filtered.length ? (
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
               {filtered.map((auction) => (
