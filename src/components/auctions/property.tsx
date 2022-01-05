@@ -61,9 +61,15 @@ const formatProtection = (protection: number) => {
     start: 0,
     end: protection * 1000,
   });
-  return [duration.hours, duration.minutes, duration.seconds]
+  const time = [duration.hours, duration.minutes, duration.seconds]
     .map((number) => (number || 0).toString().padStart(2, "0"))
     .join(":");
+
+  if (duration.days) {
+    return `${duration.days} day${duration.days > 1 ? "s" : ""} + ${time}`;
+  }
+
+  return time;
 };
 
 export const AuctionProperty = ({
