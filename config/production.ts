@@ -67,6 +67,14 @@ export default {
       },
     },
   },
+  pools: [
+    { name: "RENT-JOE" },
+    { name: "RENT-WAVAX" },
+    { name: "RENT-USDT.e" },
+    { name: "MIM-TIME" },
+    { name: "USDC.e-WAVAX" },
+    { name: "MIM-WAVAX" },
+  ],
   subgraph: "https://api.thegraph.com/subgraphs/name/renter-cafe/website",
 };
 
